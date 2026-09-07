@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Lab1</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="menu">
+    <button id="btnWork1">Робота1</button>
+    <button id="btnWork2">Робота2</button>
+  </div>
+
+  <main>
+    <p>Результат:</p>
+    <div id="output"></div>
+  </main>
+
+  <div id="dialog1" class="dialog hidden">
+    <div class="dialog-content">
+      <h3>Виберіть групу</h3>
+      <select id="groupList" size="5"></select>
+      <div class="dialog-buttons">
+        <button id="okWork1">Так</button>
+        <button id="cancelWork1">Відміна</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dialog2" class="dialog hidden">
+    <div class="dialog-content">
+      <h3>Введіть текст</h3>
+      <input type="text" id="textInput">
+      <div class="dialog-buttons">
+        <button id="okWork2">Так</button>
+        <button id="cancelWork2">Відміна</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="module1.js"></script>
+  <script src="module2.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
