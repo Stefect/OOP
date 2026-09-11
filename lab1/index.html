@@ -19,8 +19,8 @@
 
   <div id="dialog1" class="dialog hidden">
     <div class="dialog-content">
-      <h3>Виберіть групу</h3>
-      <select id="groupList" size="5"></select>
+      <h3>Введіть текст</h3>
+      <input type="text" id="textInput">
       <div class="dialog-buttons">
         <button id="okWork1">Так</button>
         <button id="cancelWork1">Відміна</button>
@@ -30,8 +30,11 @@
 
   <div id="dialog2" class="dialog hidden">
     <div class="dialog-content">
-      <h3>Введіть текст</h3>
-      <input type="text" id="textInput">
+      <h3>Виберіть значення</h3>
+      <div class="slider-container">
+        <input type="range" id="scrollBar" min="1" max="100" value="50">
+        <p>Значення: <span id="sliderValue">50</span></p>
+      </div>
       <div class="dialog-buttons">
         <button id="okWork2">Так</button>
         <button id="cancelWork2">Відміна</button>

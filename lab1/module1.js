@@ -1,23 +1,15 @@
-const groups = ['ІМ-51', 'ІМ-52', 'ІМ-53', 'ІМ-54', 'ІМ-55'];
-
 function startWork1() {
   const dialog = document.getElementById('dialog1');
-  const list = document.getElementById('groupList');
+  const input = document.getElementById('textInput');
   const okBtn = document.getElementById('okWork1');
   const cancelBtn = document.getElementById('cancelWork1');
   const output = document.getElementById('output');
 
-  list.innerHTML = '';
-  for (const group of groups) {
-    const option = document.createElement('option');
-    option.textContent = group;
-    list.appendChild(option);
-  }
-
+  input.value = '';
   dialog.classList.remove('hidden');
 
   okBtn.onclick = function () {
-    output.textContent = list.value;
+    output.textContent = input.value;
     dialog.classList.add('hidden');
   };
 

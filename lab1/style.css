@@ -54,3 +54,19 @@ main {
 .dialog-buttons button {
   margin-left: 8px;
 }
+
+.slider-container {
+  margin: 16px 0;
+  text-align: center;
+}
+
+.slider-container input[type="range"] {
+  width: 100%;
+  height: 6px;
+  cursor: pointer;
+}
+
+.slider-container p {
+  margin: 8px 0 0 0;
+  font-size: 14px;
+}
