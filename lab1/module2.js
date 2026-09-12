@@ -6,20 +6,20 @@ function startWork2() {
   const cancelBtn = document.getElementById('cancelWork2');
   const output = document.getElementById('output');
 
-  slider.value = 50;
-  sliderValue.textContent = '50';
+  slider.value = 0;
+  sliderValue.textContent = `${slider.value}`;
   dialog.classList.remove('hidden');
 
   slider.oninput = function () {
     sliderValue.textContent = slider.value;
   };
 
-  okBtn.onclick = function () {
+  okBtn.addEventListener('click', function () {
     output.textContent = slider.value;
     dialog.classList.add('hidden');
-  };
+  });
 
-  cancelBtn.onclick = function () {
+  cancelBtn.addEventListener('click', function () {
     dialog.classList.add('hidden');
-  };
+  });
 }
