@@ -10,9 +10,9 @@ function startWork2() {
   sliderValue.textContent = `${slider.value}`;
   dialog.classList.remove('hidden');
 
-  slider.oninput = function () {
+  slider.addEventListener('input', function () {
     sliderValue.textContent = slider.value;
-  };
+  });
 
   okBtn.addEventListener('click', function () {
     output.textContent = slider.value;
