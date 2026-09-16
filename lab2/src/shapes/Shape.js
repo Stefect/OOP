@@ -35,7 +35,6 @@ export class Shape {
     }
 
     /**
-     * Поліморфний метод відображення фігури
      * @param {CanvasRenderingContext2D} ctx 
      */
     show(ctx) {
