@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Графічний редактор - Lab 2 (Варіант 4)</title>
+    <title>Lab 2</title>
     <style>
         :root {
             --bg-color: #f3f3f3;
@@ -143,8 +143,13 @@
     <div class="title-bar">OOP_lab2 — Графічний редактор</div>
     
     <nav class="menu-bar">
-        <div class="menu-item-root">
-            <span class="menu-trigger">Файл</span>
+        <div class="menu-item-root" id="fileMenuContainer">
+            <span class="menu-trigger" id="fileMenuTrigger">Файл</span>
+            <div class="dropdown-menu" id="fileDropdown">
+                <div class="menu-option" id="clearCanvasBtn">
+                    <span class="check"></span>Очистити
+                </div>
+            </div>
         </div>
 
         <div class="menu-item-root" id="objectsMenuContainer">

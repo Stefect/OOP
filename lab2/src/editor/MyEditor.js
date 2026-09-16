@@ -107,4 +107,10 @@ export class MyEditor {
             this.#pcshape[i].show(this.#ctx);
         }
     }
+
+    clear() {
+        this.#pcshape.fill(null);
+        this.#shapeCount = 0;
+        this.redraw();
+    }
 }
