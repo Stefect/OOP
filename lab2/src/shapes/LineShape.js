@@ -12,4 +12,8 @@ export class LineShape extends Shape {
         ctx.stroke();
         ctx.restore();
     }
+
+    drawTrail(ctx) {
+        this.show(ctx);
+    }
 }

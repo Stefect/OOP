@@ -10,4 +10,8 @@ export class PointShape extends Shape {
         ctx.fill();
         ctx.restore();
     }
+
+    drawTrail(ctx) {
+        this.show(ctx);
+    }
 }

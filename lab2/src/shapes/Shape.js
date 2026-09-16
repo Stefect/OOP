@@ -1,8 +1,4 @@
-/**
- * Базовий абстрактний клас фігури
- */
 export class Shape {
-    // Приватні поля координат (інкапсуляція)
     #xs1;
     #ys1;
     #xs2;
@@ -34,10 +30,11 @@ export class Shape {
         };
     }
 
-    /**
-     * @param {CanvasRenderingContext2D} ctx 
-     */
     show(ctx) {
-        throw new Error("Метод show() повинен бути реалізований у класі-нащадку.");
+        throw new Error("Метод show() має бути перевизначений.");
+    }
+
+    drawTrail(ctx) {
+        throw new Error("Метод drawTrail() має бути перевизначений.");
     }
 }
