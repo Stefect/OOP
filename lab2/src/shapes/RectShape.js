@@ -12,8 +12,6 @@ export class RectShape extends Shape {
         ctx.save();
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 1;
-
-        // Без заповнення за варіантом
         ctx.strokeRect(x, y, width, height);
         ctx.restore();
     }
