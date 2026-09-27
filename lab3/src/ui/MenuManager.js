@@ -2,18 +2,32 @@ export class MenuManager {
     #trigger;
     #dropdown;
     #options;
+    #toolbarButtons;
+    #titleBar;
     #currentShapeType;
     #onSelectCallback;
 
-    constructor({ triggerId, dropdownId, onSelect }) {
+    #typeNames = {
+        POINT: "Крапка",
+        LINE: "Лінія",
+        RECTANGLE: "Прямокутник",
+        ELLIPSE: "Еліпс"
+    };
+
+    constructor({ triggerId, dropdownId, toolbarId, titleBarId, onSelect }) {
         this.#trigger = document.getElementById(triggerId);
         this.#dropdown = document.getElementById(dropdownId);
         this.#options = this.#dropdown.querySelectorAll(".menu-option");
+        
+        const toolbar = document.getElementById(toolbarId);
+        this.#toolbarButtons = toolbar ? toolbar.querySelectorAll(".toolbar-btn") : [];
+        this.#titleBar = document.getElementById(titleBarId);
+
         this.#currentShapeType = "RECTANGLE";
         this.#onSelectCallback = onSelect;
 
         this.#initEvents();
-        this.updateCheckmarks();
+        this.updateUI();
     }
 
     #initEvents() {
@@ -25,21 +39,32 @@ export class MenuManager {
 
         this.#options.forEach(option => {
             option.addEventListener("click", () => {
-                const selectedType = option.dataset.shape;
-                this.#currentShapeType = selectedType;
-                this.updateCheckmarks();
+                this.selectType(option.dataset.shape);
                 this.close();
+            });
+        });
 
-                if (typeof this.#onSelectCallback === "function") {
-                    this.#onSelectCallback(selectedType);
-                }
+        this.#toolbarButtons.forEach(btn => {
+            btn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                this.selectType(btn.dataset.shape);
             });
         });
 
         window.addEventListener("click", () => this.close());
     }
 
-    updateCheckmarks() {
+    selectType(type) {
+        if (!type || !this.#typeNames[type]) return;
+        this.#currentShapeType = type;
+        this.updateUI();
+
+        if (typeof this.#onSelectCallback === "function") {
+            this.#onSelectCallback(type);
+        }
+    }
+
+    updateUI() {
         this.#options.forEach(option => {
             const checkSpan = option.querySelector(".check");
             if (option.dataset.shape === this.#currentShapeType) {
@@ -48,6 +73,16 @@ export class MenuManager {
                 checkSpan.textContent = "";
             }
         });
+
+        this.#toolbarButtons.forEach(btn => {
+            btn.classList.toggle("active", btn.dataset.shape === this.#currentShapeType);
+        });
+
+        const name = this.#typeNames[this.#currentShapeType];
+        if (this.#titleBar) {
+            this.#titleBar.textContent = `My Prog — ${name}`;
+        }
+        document.title = `Lab 3 — ${name}`;
     }
 
     close() {

@@ -18,6 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const menu = new MenuManager({
         triggerId: "objectsMenuTrigger",
         dropdownId: "objectsDropdown",
+        toolbarId: "mainToolbar",
+        titleBarId: "windowTitleBar",
         onSelect: (type) => editor.setShapeType(type)
     });
 
@@ -33,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (fileTrigger && fileDropdown) {
         fileTrigger.addEventListener("click", (e) => {
             e.stopPropagation();
-            menu.close(); // закриваємо меню "Об'єкти"
+            menu.close();
             fileDropdown.classList.toggle("visible");
             fileTrigger.classList.toggle("active");
         });
@@ -53,7 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
         aboutBtn.addEventListener("click", () => {
             closeFileMenu();
             menu.close();
-            alert("Лабораторна робота №2\nТема: Графічний редактор об'єктів\nВаріант: Ж = 4");
+            alert("Лабораторна робота №3\nТема: Розробка інтерфейсу користувача (Toolbar)\nВаріант: Ж = 5");
         });
     }
 });
