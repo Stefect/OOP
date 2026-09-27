@@ -1,21 +1,37 @@
 import { Shape } from "./Shape.js";
 
 export class RectShape extends Shape {
-    show(ctx) {
+    #getBounds() {
         const { x1, y1, x2, y2 } = this.coords;
-        const x = Math.min(x1, x2);
-        const y = Math.min(y1, y2);
-        const width = Math.abs(x2 - x1);
-        const height = Math.abs(y2 - y1);
+        const dx = Math.abs(x2 - x1);
+        const dy = Math.abs(y2 - y1);
+        return {
+            x: x1 - dx,
+            y: y1 - dy,
+            w: dx * 2,
+            h: dy * 2
+        };
+    }
+
+    show(ctx) {
+        const { x, y, w, h } = this.#getBounds();
+        if (w === 0 || h === 0) return;
 
         ctx.save();
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 1;
-        ctx.strokeRect(x, y, width, height);
+        ctx.fillStyle = "#3b82f6";
+        ctx.fillRect(x, y, w, h);
         ctx.restore();
     }
 
     drawTrail(ctx) {
-        this.show(ctx);
+        const { x, y, w, h } = this.#getBounds();
+        if (w === 0 || h === 0) return;
+
+        ctx.save();
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([8, 3, 2, 3]);
+        ctx.strokeRect(x, y, w, h);
+        ctx.restore();
     }
 }
