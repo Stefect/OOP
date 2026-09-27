@@ -6,8 +6,7 @@ import { EllipseShape } from "../shapes/EllipseShape.js";
 export class MyEditor {
     #canvas;
     #ctx;
-    #pcshape;
-    #shapeCount;
+    #shapes;
     #capacity;
     #currentShape;
     #shapeTypeRegistry;
@@ -18,9 +17,8 @@ export class MyEditor {
         this.#canvas = document.getElementById(canvasId);
         this.#ctx = this.#canvas.getContext("2d");
 
-        this.#capacity = 104;
-        this.#pcshape = new Array(this.#capacity).fill(null);
-        this.#shapeCount = 0;
+        this.#capacity = 105;
+        this.#shapes = [];
 
         this.#shapeTypeRegistry = {
             POINT: PointShape,
@@ -42,6 +40,7 @@ export class MyEditor {
         this.#canvas.addEventListener("pointerdown", (e) => this.#onPointerDown(e));
         this.#canvas.addEventListener("pointermove", (e) => this.#onPointerMove(e));
         this.#canvas.addEventListener("pointerup", (e) => this.#onPointerUp(e));
+        this.#canvas.addEventListener("pointerleave", () => this.#onPointerCancel());
     }
 
     #onResize() {
@@ -52,22 +51,39 @@ export class MyEditor {
     }
 
     setShapeType(type) {
-        this.#currentType = type;
+        if (this.#shapeTypeRegistry[type]) {
+            this.#currentType = type;
+        }
     }
 
     #getCanvasPos(e) {
         const rect = this.#canvas.getBoundingClientRect();
         return {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
+            x: Math.round(e.clientX - rect.left),
+            y: Math.round(e.clientY - rect.top)
         };
     }
 
     #onPointerDown(e) {
-        this.#isDrawing = true;
+        if (e.button !== 0) return;
         const { x, y } = this.#getCanvasPos(e);
 
+        if (this.#currentType === "POINT") {
+            if (this.#shapes.length >= this.#capacity) {
+                alert(`Досягнуто ліміту списку у ${this.#capacity} фігур!`);
+                return;
+            }
+            const point = new PointShape();
+            point.setCoords(x, y, x, y);
+            this.#shapes.push(point);
+            this.redraw();
+            return;
+        }
+
         const ShapeClass = this.#shapeTypeRegistry[this.#currentType];
+        if (!ShapeClass) return;
+
+        this.#isDrawing = true;
         this.#currentShape = new ShapeClass();
         this.#currentShape.setCoords(x, y, x, y);
     }
@@ -91,26 +107,36 @@ export class MyEditor {
         const { x1, y1 } = this.#currentShape.coords;
         this.#currentShape.setCoords(x1, y1, x, y);
 
-        if (this.#shapeCount < this.#capacity) {
-            this.#pcshape[this.#shapeCount++] = this.#currentShape;
-        } else {
-            alert("Переповнення статичного масиву фігур!");
+        if (x1 !== x || y1 !== y) {
+            if (this.#shapes.length >= this.#capacity) {
+                alert(`Досягнуто ліміту списку у ${this.#capacity} фігур!`);
+            } else {
+                this.#shapes.push(this.#currentShape);
+            }
         }
 
         this.#currentShape = null;
         this.redraw();
     }
 
+    #onPointerCancel() {
+        if (!this.#isDrawing) return;
+        this.#isDrawing = false;
+        this.#currentShape = null;
+        this.redraw();
+    }
+
     redraw() {
         this.#ctx.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
-        for (let i = 0; i < this.#shapeCount; i++) {
-            this.#pcshape[i].show(this.#ctx);
+        for (const shape of this.#shapes) {
+            shape.show(this.#ctx);
         }
     }
 
     clear() {
-        this.#pcshape.fill(null);
-        this.#shapeCount = 0;
+        this.#shapes = [];
+        this.#currentShape = null;
+        this.#isDrawing = false;
         this.redraw();
     }
 }
