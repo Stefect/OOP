@@ -2,6 +2,8 @@ import { PointShape } from "../shapes/PointShape.js";
 import { LineShape } from "../shapes/LineShape.js";
 import { RectShape } from "../shapes/RectShape.js";
 import { EllipseShape } from "../shapes/EllipseShape.js";
+import { LineOOShape } from "../shapes/LineOOShape.js";
+import { CubeShape } from "../shapes/CubeShape.js";
 
 export class MyEditor {
     #canvas;
@@ -12,6 +14,7 @@ export class MyEditor {
     #shapeTypeRegistry;
     #currentType;
     #isDrawing;
+    #abortController;
 
     constructor(canvasId) {
         this.#canvas = document.getElementById(canvasId);
@@ -24,23 +27,28 @@ export class MyEditor {
             POINT: PointShape,
             LINE: LineShape,
             RECTANGLE: RectShape,
-            ELLIPSE: EllipseShape
+            ELLIPSE: EllipseShape,
+            LINEOO: LineOOShape,
+            CUBE: CubeShape
         };
 
         this.#currentType = "RECTANGLE";
         this.#currentShape = null;
         this.#isDrawing = false;
+        this.#abortController = new AbortController();
 
         this.#bindEvents();
         this.#onResize();
     }
 
     #bindEvents() {
-        window.addEventListener("resize", () => this.#onResize());
-        this.#canvas.addEventListener("pointerdown", (e) => this.#onPointerDown(e));
-        this.#canvas.addEventListener("pointermove", (e) => this.#onPointerMove(e));
-        this.#canvas.addEventListener("pointerup", (e) => this.#onPointerUp(e));
-        this.#canvas.addEventListener("pointerleave", () => this.#onPointerCancel());
+        const signal = this.#abortController.signal;
+
+        window.addEventListener("resize", () => this.#onResize(), { signal });
+        this.#canvas.addEventListener("pointerdown", (e) => this.#onPointerDown(e), { signal });
+        this.#canvas.addEventListener("pointermove", (e) => this.#onPointerMove(e), { signal });
+        this.#canvas.addEventListener("pointerup", (e) => this.#onPointerUp(e), { signal });
+        this.#canvas.addEventListener("pointerleave", () => this.#onPointerCancel(), { signal });
     }
 
     #onResize() {
@@ -138,5 +146,12 @@ export class MyEditor {
         this.#currentShape = null;
         this.#isDrawing = false;
         this.redraw();
+    }
+
+    destroy() {
+        this.#abortController.abort();
+        this.#shapes = [];
+        this.#currentShape = null;
+        this.#ctx.clearRect(0, 0, this.#canvas.width, this.#canvas.height);
     }
 }
