@@ -2,7 +2,7 @@ import { MenuManager } from "./ui/MenuManager.js";
 import { MyEditor } from "./editor/MyEditor.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    const editor = new MyEditor("editorCanvas");
+    let editor = new MyEditor("editorCanvas");
 
     const fileTrigger = document.getElementById("fileMenuTrigger");
     const fileDropdown = document.getElementById("fileDropdown");
@@ -20,7 +20,11 @@ document.addEventListener("DOMContentLoaded", () => {
         dropdownId: "objectsDropdown",
         toolbarId: "mainToolbar",
         titleBarId: "windowTitleBar",
-        onSelect: (type) => editor.setShapeType(type)
+        onSelect: (type) => {
+            if (editor) {
+                editor.setShapeType(type);
+            }
+        }
     });
 
     editor.setShapeType(menu.currentShapeType);
@@ -45,7 +49,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (clearBtn) {
         clearBtn.addEventListener("click", () => {
-            editor.clear();
+            if (editor) {
+                editor.clear();
+            }
             closeFileMenu();
         });
     }
@@ -55,7 +61,14 @@ document.addEventListener("DOMContentLoaded", () => {
         aboutBtn.addEventListener("click", () => {
             closeFileMenu();
             menu.close();
-            alert("Лабораторна робота №3\nТема: Розробка інтерфейсу користувача (Toolbar)\nВаріант: Ж = 5");
+            alert("Лабораторна робота №4\nТема: Вдосконалення структури коду графічного редактора об'єктів\nВаріант: 4 (парний — динамічний об'єкт MyEditor)");
         });
     }
+
+    window.addEventListener("beforeunload", () => {
+        if (editor) {
+            editor.destroy();
+            editor = null;
+        }
+    });
 });
