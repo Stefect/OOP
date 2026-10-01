@@ -11,7 +11,9 @@ export class MenuManager {
         POINT: "Крапка",
         LINE: "Лінія",
         RECTANGLE: "Прямокутник",
-        ELLIPSE: "Еліпс"
+        ELLIPSE: "Еліпс",
+        LINEOO: "Лінія з кружечками",
+        CUBE: "Каркас куба"
     };
 
     constructor({ triggerId, dropdownId, toolbarId, titleBarId, onSelect }) {
@@ -82,7 +84,7 @@ export class MenuManager {
         if (this.#titleBar) {
             this.#titleBar.textContent = `My Prog — ${name}`;
         }
-        document.title = `Lab 3 — ${name}`;
+        document.title = `Lab 4 — ${name}`;
     }
 
     close() {
