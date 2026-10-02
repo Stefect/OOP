@@ -35,7 +35,7 @@ export class EllipseShape extends Shape {
         ctx.save();
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 1;
-        ctx.setLineDash([8, 3, 2, 3]);
+        ctx.setLineDash([4, 4]); // 👈 Єдиний пунктир для всіх фігур
         ctx.beginPath();
         ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
         ctx.stroke();

@@ -18,7 +18,7 @@ export class LineShape extends Shape {
         ctx.save();
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 1;
-        ctx.setLineDash([8, 3, 2, 3]);
+        ctx.setLineDash([4, 4]); // 👈 Єдиний пунктир для всіх фігур
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
