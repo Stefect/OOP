@@ -27,32 +27,15 @@ export class LineOOShape extends Shape {
     show(ctx) {
         this.#updateParts();
         this.#line.show(ctx);
-        this.#startCircle.show(ctx);
-        this.#endCircle.show(ctx);
+        this.#startCircle.show(ctx, true);
+        this.#endCircle.show(ctx, true);
     }
 
     drawTrail(ctx) {
-        const { x1, y1, x2, y2 } = this.coords;
-        const r = this.#radius;
-
-        ctx.save();
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]); 
-
-        ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(x1, y1, r, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.arc(x2, y2, r, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.restore();
+        this.#updateParts();
+        
+        this.#line.drawTrail(ctx);
+        this.#startCircle.drawTrail(ctx);
+        this.#endCircle.drawTrail(ctx);
     }
 }

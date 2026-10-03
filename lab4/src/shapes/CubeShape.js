@@ -1,13 +1,19 @@
 import { Shape } from "./Shape.js";
 import { LineShape } from "./LineShape.js";
+import { RectShape } from "./RectShape.js";
 
 export class CubeShape extends Shape {
-    #lines = [];
+    #frontRect;
+    #backRect;
+    #connectingLines = [];
 
     constructor() {
         super();
-        for (let i = 0; i < 12; i++) {
-            this.#lines.push(new LineShape());
+        this.#frontRect = new RectShape();
+        this.#backRect = new RectShape();
+
+        for (let i = 0; i < 4; i++) {
+            this.#connectingLines.push(new LineShape());
         }
     }
 
@@ -38,44 +44,47 @@ export class CubeShape extends Shape {
             { x: left + dx, y: bottom - dy }
         ];
 
-        return { f, b };
+        return { f, b, left, top, right, bottom, dx, dy };
+    }
+
+    #updateParts() {
+        const { f, b, left, top, right, bottom, dx, dy } = this.#getVertices();
+
+        const frontCenterX = Math.round((left + right) / 2);
+        const frontCenterY = Math.round((top + bottom) / 2);
+        const backCenterX = frontCenterX + dx;
+        const backCenterY = frontCenterY - dy;
+
+        this.#frontRect.setCoords(frontCenterX, frontCenterY, right, bottom);
+        this.#backRect.setCoords(backCenterX, backCenterY, right + dx, bottom - dy);
+
+        for (let i = 0; i < 4; i++) {
+            this.#connectingLines[i].setCoords(f[i].x, f[i].y, b[i].x, b[i].y);
+        }
     }
 
     show(ctx) {
-        const { f, b } = this.#getVertices();
+        const { f } = this.#getVertices();
         if (f[1].x === f[0].x || f[2].y === f[1].y) return;
 
-        const edges = [
-            [f[0], f[1]], [f[1], f[2]], [f[2], f[3]], [f[3], f[0]],
-            [b[0], b[1]], [b[1], b[2]], [b[2], b[3]], [b[3], b[0]],
-            [f[0], b[0]], [f[1], b[1]], [f[2], b[2]], [f[3], b[3]]
-        ];
+        this.#updateParts();
 
-        edges.forEach(([p1, p2], index) => {
-            this.#lines[index].setCoords(p1.x, p1.y, p2.x, p2.y);
-            this.#lines[index].show(ctx);
-        });
-    }
-
-    drawTrail(ctx) {
-        const { f, b } = this.#getVertices();
-        if (f[1].x === f[0].x || f[2].y === f[1].y) return;
-
-        ctx.save();
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 1;
-        ctx.setLineDash([4, 4]);
-
-        ctx.beginPath();
-        ctx.strokeRect(f[0].x, f[0].y, f[1].x - f[0].x, f[2].y - f[1].y);
-        ctx.strokeRect(b[0].x, b[0].y, b[1].x - b[0].x, b[2].y - b[1].y);
-
+        this.#backRect.show(ctx, true);
         for (let i = 0; i < 4; i++) {
-            ctx.moveTo(f[i].x, f[i].y);
-            ctx.lineTo(b[i].x, b[i].y);
+            this.#connectingLines[i].show(ctx);
         }
-        ctx.stroke();
+        this.#frontRect.show(ctx, true);
+    }
+    drawTrail(ctx) {
+        const { f } = this.#getVertices();
+        if (f[1].x === f[0].x || f[2].y === f[1].y) return;
 
-        ctx.restore();
+        this.#updateParts();
+
+        this.#backRect.drawTrail(ctx);
+        for (let i = 0; i < 4; i++) {
+            this.#connectingLines[i].drawTrail(ctx);
+        }
+        this.#frontRect.drawTrail(ctx);
     }
 }

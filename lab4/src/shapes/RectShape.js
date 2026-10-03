@@ -13,13 +13,19 @@ export class RectShape extends Shape {
         };
     }
 
-    show(ctx) {
+    show(ctx, isOutlineOnly = false) {
         const { x, y, w, h } = this.#getBounds();
         if (w === 0 || h === 0) return;
 
         ctx.save();
-        ctx.fillStyle = "#3b82f6";
-        ctx.fillRect(x, y, w, h);
+        if (isOutlineOnly) {
+            ctx.strokeStyle = "#000000";
+            ctx.lineWidth = 1.5;
+            ctx.strokeRect(x, y, w, h);
+        } else {
+            ctx.fillStyle = "#3b82f6";
+            ctx.fillRect(x, y, w, h);
+        }
         ctx.restore();
     }
 
@@ -30,7 +36,7 @@ export class RectShape extends Shape {
         ctx.save();
         ctx.strokeStyle = "#000000";
         ctx.lineWidth = 1;
-        ctx.setLineDash([8, 3, 2, 3]);
+        ctx.setLineDash([4, 4]);
         ctx.strokeRect(x, y, w, h);
         ctx.restore();
     }
