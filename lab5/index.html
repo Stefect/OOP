@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 4 — Прямокутник</title>
+    <title>Lab 5 — Графічний редактор</title>
     <style>
         :root {
             --bg-color: #f3f3f3;
@@ -30,6 +30,7 @@
             align-items: center;
             justify-content: center;
             padding: 16px;
+            position: relative;
         }
 
         .app-window {
@@ -42,6 +43,7 @@
             display: flex;
             flex-direction: column;
             overflow: hidden;
+            position: relative;
         }
 
         .title-bar {
@@ -124,6 +126,12 @@
             font-weight: bold;
         }
 
+        .menu-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 4px 0;
+        }
+
         .toolbar {
             height: 40px;
             background: #fbfbfb;
@@ -161,10 +169,6 @@
             color: var(--primary-accent);
         }
 
-        .toolbar-btn svg {
-            pointer-events: none;
-        }
-
         .canvas-container {
             flex: 1;
             position: relative;
@@ -177,6 +181,104 @@
             height: 100%;
             cursor: crosshair;
         }
+
+        .table-window {
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            width: 380px;
+            max-height: 480px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: none;
+            flex-direction: column;
+            z-index: 200;
+            overflow: hidden;
+        }
+
+        .table-header {
+            height: 36px;
+            background: #f9fafb;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .close-btn {
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 0 4px;
+        }
+
+        .close-btn:hover {
+            color: #ef4444;
+        }
+
+        .table-body-container {
+            flex: 1;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        .data-table th {
+            background: #f3f4f6;
+            padding: 8px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .data-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table tr {
+            cursor: pointer;
+            transition: background 0.1s ease;
+        }
+
+        .data-table tr:hover {
+            background-color: var(--hover-bg);
+        }
+
+        .data-table tr.selected-row {
+            background-color: var(--active-bg);
+            font-weight: 600;
+        }
+
+        .delete-row-btn {
+            background: transparent;
+            border: none;
+            color: #ef4444;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .delete-row-btn:hover {
+            background-color: #fee2e2;
+        }
     </style>
 </head>
 <body>
@@ -188,6 +290,13 @@
         <div class="menu-item-root" id="fileMenuContainer">
             <span class="menu-trigger" id="fileMenuTrigger">Файл</span>
             <div class="dropdown-menu" id="fileDropdown">
+                <div class="menu-option" id="saveCsvBtn">
+                    <span class="check"></span>Зберегти у CSV
+                </div>
+                <div class="menu-option" id="loadCsvBtn">
+                    <span class="check"></span>Завантажити з CSV
+                </div>
+                <div class="menu-divider"></div>
                 <div class="menu-option" id="clearCanvasBtn">
                     <span class="check"></span>Очистити
                 </div>
@@ -204,6 +313,10 @@
                 <div class="menu-option" data-shape="LINEOO"><span class="check"></span>Лінія з кружечками</div>
                 <div class="menu-option" data-shape="CUBE"><span class="check"></span>Каркас куба</div>
             </div>
+        </div>
+
+        <div class="menu-item-root">
+            <span class="menu-trigger" id="tableMenuTrigger">Таблиця об'єктів</span>
         </div>
 
         <div class="menu-item-root">
@@ -254,7 +367,31 @@
     <main class="canvas-container">
         <canvas id="editorCanvas"></canvas>
     </main>
+
+    <div class="table-window" id="tableWindow">
+        <div class="table-header">
+            <span>Таблиця графічних об'єктів</span>
+            <button class="close-btn" id="closeTableBtn">&times;</button>
+        </div>
+        <div class="table-body-container">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Назва</th>
+                        <th>x1</th>
+                        <th>y1</th>
+                        <th>x2</th>
+                        <th>y2</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+<input type="file" id="csvFileInput" accept=".csv" style="display: none;" />
 
 <script type="module" src="./src/main.js"></script>
 </body>
