@@ -6,7 +6,6 @@ import { LineOOShape } from "../shapes/LineOOShape.js";
 import { CubeShape } from "../shapes/CubeShape.js";
 
 export class MyEditor {
-    // Приватні статичні поля для класичної реалізації Singleton
     static #instance = null;
     static #isInternalConstructing = false;
 
@@ -21,7 +20,6 @@ export class MyEditor {
     #abortController;
 
     constructor(canvasId) {
-        // Захист від прямого створення через `new MyEditor()`
         if (!MyEditor.#isInternalConstructing) {
             throw new Error("Не можна створювати MyEditor через `new`. Використовуйте MyEditor.getInstance(canvasId)!");
         }
@@ -50,7 +48,6 @@ export class MyEditor {
         this.#onResize();
     }
 
-    // Класичний метод отримання єдиного екземпляра Singleton
     static getInstance(canvasId) {
         if (!MyEditor.#instance) {
             MyEditor.#isInternalConstructing = true;

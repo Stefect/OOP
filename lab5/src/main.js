@@ -2,7 +2,7 @@ import { MenuManager } from "./ui/MenuManager.js";
 import { MyEditor } from "./editor/MyEditor.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    let editor = new MyEditor("editorCanvas");
+    let editor = MyEditor.getInstance("editorCanvas");
 
     const fileTrigger = document.getElementById("fileMenuTrigger");
     const fileDropdown = document.getElementById("fileDropdown");
@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
         aboutBtn.addEventListener("click", () => {
             closeFileMenu();
             menu.close();
-            alert("Лабораторна робота №4\nТема: Вдосконалення структури коду графічного редактора об'єктів\nВаріант: 4 (парний — динамічний об'єкт MyEditor)");
+            alert("Лабораторна робота №5\nТема: Розробка багатовіконного інтерфейсу користувача\nВаріант: 4 (класична реалізація Singleton)");
         });
     }
 
