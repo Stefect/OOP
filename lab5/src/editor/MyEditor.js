@@ -129,7 +129,7 @@ export class MyEditor {
     #onPointerDown(e) {
         if (e.button !== 0) return;
         const { x, y } = this.#getCanvasPos(e);
-        this.#highlightedIndex = -1; 
+        this.#highlightedIndex = -1; // Скидаємо виділення при малюванні
 
         if (this.#currentType === "POINT") {
             if (this.#shapes.length >= this.#capacity) {
