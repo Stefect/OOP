@@ -3,95 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lab 6 — Object3 (Графік y = f(x))</title>
+    <title>Lab 6 — Object3 (Графік)</title>
     <style>
-        :root {
-            --bg-color: #f3f3f3;
-            --window-bg: #ffffff;
-            --border-color: #d1d5db;
-            --primary-accent: #0078d4;
-            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-        }
-
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-color);
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        .container {
-            background: var(--window-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-        }
-
-        .header {
-            height: 36px;
-            background: #f9fafb;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 12px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #374151;
-        }
-
-        .canvas-container {
-            flex: 1;
-            position: relative;
-            background: #ffffff;
-        }
-
-        canvas {
-            display: block;
-            width: 100%;
-            height: 100%;
-        }
-
-        .footer-info {
-            padding: 8px 12px;
-            background: #f9fafb;
-            border-top: 1px solid var(--border-color);
-            font-size: 11px;
-            color: #6b7280;
-            display: flex;
-            justify-content: space-between;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+        body { font-family: system-ui, sans-serif; background: #f3f3f3; padding: 12px; height: 100vh; display: flex; flex-direction: column; }
+        .box { background: #fff; border: 1px solid #d1d5db; border-radius: 6px; flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        .header { height: 36px; background: #f9fafb; border-bottom: 1px solid #d1d5db; display: flex; align-items: center; justify-content: space-between; padding: 0 12px; font-size: 13px; font-weight: 600; color: #374151; }
+        .canvas-wrap { flex: 1; position: relative; background: #fff; }
+        canvas { display: block; width: 100%; height: 100%; }
+        .footer { padding: 8px 12px; background: #f9fafb; border-top: 1px solid #d1d5db; font-size: 11px; color: #6b7280; display: flex; justify-content: space-between; }
     </style>
 </head>
 <body>
-
-    <div class="container">
+    <div class="box">
         <div class="header">
             <span>Графік функції y = f(x)</span>
-            <span id="pointCountText" style="font-weight: normal; color: #6b7280;">Очікування даних...</span>
+            <span id="pointCountText" style="font-weight: normal; color: #6b7280;">Очікування...</span>
         </div>
-        <div class="canvas-container">
+        <div class="canvas-wrap">
             <canvas id="graphCanvas"></canvas>
         </div>
-        <div class="footer-info">
-            <span>Дані зчитано з буфера обміну (Clipboard)</span>
+        <div class="footer">
+            <span>Зчитано з буфера (Clipboard)</span>
             <span id="statusText">Готово</span>
         </div>
     </div>
-
     <script type="module" src="./main.js"></script>
 </body>
 </html>

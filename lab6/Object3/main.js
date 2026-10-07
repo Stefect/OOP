@@ -1,107 +1,70 @@
+"use strict";
+
 document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("graphCanvas");
     const ctx = canvas.getContext("2d");
     const pointCountText = document.getElementById("pointCountText");
     const statusText = document.getElementById("statusText");
 
-    function resizeCanvas() {
+    const getPoints = async () => {
+        try {
+            const text = await navigator.clipboard.readText();
+            return JSON.parse(text);
+        } catch {
+            const fallback = localStorage.getItem("lab6_clipboard_data");
+            return fallback ? JSON.parse(fallback) : [];
+        }
+    };
+
+    async function drawGraph() {
         const parent = canvas.parentElement;
         canvas.width = parent.clientWidth;
         canvas.height = parent.clientHeight;
-    }
 
-    async function readPointsFromClipboard() {
-        let rawData = "";
-
-        try {
-            rawData = await navigator.clipboard.readText();
-        } catch (err) {
-            rawData = localStorage.getItem("lab6_clipboard_data") || "";
-        }
-
-        if (!rawData) return [];
-
-        try {
-            const points = JSON.parse(rawData);
-            return Array.isArray(points) ? points : [];
-        } catch (e) {
-            return [];
-        }
-    }
-
-    async function drawGraph() {
-        resizeCanvas();
-        const points = await readPointsFromClipboard();
-
+        const points = await getPoints();
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        if (points.length === 0) {
+        if (!points?.length) {
             pointCountText.textContent = "Немає даних у буфері";
             return;
         }
 
-        const sortedPoints = [...points].sort((a, b) => a.x - b.x);
+        const pts = [...points].sort((a, b) => a.x - b.x);
+        pointCountText.textContent = `Точок на графіку: ${pts.length}`;
 
-        pointCountText.textContent = `Точок на графіку: ${sortedPoints.length}`;
+        const pad = 50, w = canvas.width - pad * 2, h = canvas.height - pad * 2;
+        const xVals = pts.map(p => p.x), yVals = pts.map(p => p.y);
 
-        const padding = 50;
-        const w = canvas.width - padding * 2;
-        const h = canvas.height - padding * 2;
-
-        const xValues = sortedPoints.map(p => p.x);
-        const yValues = sortedPoints.map(p => p.y);
-
-        let minX = Math.min(...xValues);
-        let maxX = Math.max(...xValues);
-        let minY = Math.min(...yValues);
-        let maxY = Math.max(...yValues);
-
+        let minX = Math.min(...xVals), maxX = Math.max(...xVals);
+        let minY = Math.min(...yVals), maxY = Math.max(...yVals);
         if (minX === maxX) maxX += 1;
         if (minY === maxY) maxY += 1;
 
-        const toPixelX = (x) => padding + ((x - minX) / (maxX - minX)) * w;
-        const toPixelY = (y) => (canvas.height - padding) - ((y - minY) / (maxY - minY)) * h;
+        const toPxX = (x) => pad + ((x - minX) / (maxX - minX)) * w;
+        const toPxY = (y) => (canvas.height - pad) - ((y - minY) / (maxY - minY)) * h;
 
         ctx.save();
+
         ctx.strokeStyle = "#9ca3af";
         ctx.lineWidth = 1.5;
-
+        
         ctx.beginPath();
-        ctx.moveTo(padding, canvas.height - padding);
-        ctx.lineTo(canvas.width - padding + 20, canvas.height - padding);
+        ctx.moveTo(pad, canvas.height - pad); ctx.lineTo(canvas.width - pad + 20, canvas.height - pad); // X
+        ctx.moveTo(pad, pad - 20); ctx.lineTo(pad, canvas.height - pad); // Y
         ctx.stroke();
 
-        ctx.beginPath();
-        ctx.moveTo(padding, padding - 20);
-        ctx.lineTo(padding, canvas.height - padding);
-        ctx.stroke();
-
-        ctx.fillStyle = "#374151";
-        ctx.font = "12px sans-serif";
-        ctx.fillText("X", canvas.width - padding + 25, canvas.height - padding + 4);
-        ctx.fillText("Y", padding - 4, padding - 25);
+        ctx.fillStyle = "#374151"; ctx.font = "12px sans-serif";
+        ctx.fillText("X", canvas.width - pad + 25, canvas.height - pad + 4);
+        ctx.fillText("Y", pad - 4, pad - 25);
 
         ctx.beginPath();
         ctx.strokeStyle = "#0078d4";
         ctx.lineWidth = 2;
-
-        sortedPoints.forEach((p, index) => {
-            const px = toPixelX(p.x);
-            const py = toPixelY(p.y);
-
-            if (index === 0) {
-                ctx.moveTo(px, py);
-            } else {
-                ctx.lineTo(px, py);
-            }
-        });
+        pts.forEach((p, i) => i === 0 ? ctx.moveTo(toPxX(p.x), toPxY(p.y)) : ctx.lineTo(toPxX(p.x), toPxY(p.y)));
         ctx.stroke();
 
-        sortedPoints.forEach((p) => {
-            const px = toPixelX(p.x);
-            const py = toPixelY(p.y);
-
-            // Точка
+        pts.forEach((p) => {
+            const px = toPxX(p.x), py = toPxY(p.y);
             ctx.beginPath();
             ctx.fillStyle = "#ef4444";
             ctx.arc(px, py, 4, 0, Math.PI * 2);
@@ -117,12 +80,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     window.addEventListener("resize", drawGraph);
-
-    window.addEventListener("storage", (e) => {
-        if (e.key === "lab6_data_ready") {
-            drawGraph();
-        }
-    });
-
+    window.addEventListener("storage", (e) => e.key === "lab6_data_ready" && drawGraph());
+    
     drawGraph();
 });
