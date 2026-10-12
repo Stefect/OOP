@@ -57,6 +57,10 @@ export class Editor {
     ]);
   }
 
+  get document() {
+    return this.#document;
+  }
+
   async execute(line) {
     const [name, ...args] = line.trim().split(/\s+/);
     if (!name) {
