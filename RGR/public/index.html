@@ -4,170 +4,85 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Векторний графічний редактор</title>
-    <style>
-      * { box-sizing: border-box; }
-      body {
-        margin: 0;
-        font-family: "Segoe UI", Arial, sans-serif;
-        background: #eceff3;
-        color: #222;
-      }
-      header {
-        background: #2d3e50;
-        color: #fff;
-        padding: 10px 16px;
-        font-size: 18px;
-      }
-      .layout {
-        display: grid;
-        grid-template-columns: 260px 1fr 260px;
-        gap: 12px;
-        padding: 12px;
-      }
-      .panel {
-        background: #fff;
-        border-radius: 8px;
-        padding: 12px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-      .panel h3 {
-        margin: 0 0 10px;
-        font-size: 15px;
-        color: #2d3e50;
-      }
-      label { display: block; font-size: 13px; margin: 6px 0 2px; }
-      input, select {
-        width: 100%;
-        padding: 6px;
-        border: 1px solid #bbb;
-        border-radius: 4px;
-        font-size: 14px;
-      }
-      .row { display: flex; gap: 6px; }
-      .row > * { flex: 1; }
-      button {
-        margin-top: 8px;
-        padding: 7px 10px;
-        border: none;
-        border-radius: 4px;
-        background: #3c7dd9;
-        color: #fff;
-        cursor: pointer;
-        font-size: 14px;
-      }
-      button:hover { background: #2f68bb; }
-      button.danger { background: #c94a4a; }
-      button.danger:hover { background: #a93a3a; }
-      button.secondary { background: #6b7785; }
-      button.secondary:hover { background: #56606c; }
-      .canvas-wrap {
-        background: #fff;
-        border-radius: 8px;
-        padding: 8px;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-      }
-      canvas {
-        width: 100%;
-        height: auto;
-        border: 1px solid #999;
-        background: #fff;
-        cursor: crosshair;
-        display: block;
-      }
-      #status {
-        margin-top: 8px;
-        font-size: 13px;
-        min-height: 18px;
-        color: #2d6a2d;
-      }
-      #status.error { color: #b02a2a; }
-      #shapeList {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        max-height: 260px;
-        overflow-y: auto;
-      }
-      #shapeList li {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 6px 8px;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 13px;
-      }
-      #shapeList li:hover { background: #f0f4fa; }
-      #shapeList li.selected { background: #dce8fb; }
-      #shapeList li button {
-        margin: 0;
-        padding: 2px 8px;
-        background: #c94a4a;
-      }
-      .muted { color: #777; font-size: 13px; }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header>Векторний графічний редактор</header>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand">Vector</div>
 
-    <div class="layout">
-      <div>
-        <div class="panel">
-          <h3>Додати фігуру</h3>
-          <label for="addType">Тип</label>
-          <select id="addType">
-            <option value="rectangle">Прямокутник</option>
-            <option value="circle">Коло</option>
-            <option value="line">Лінія</option>
-          </select>
-          <div id="addFields"></div>
-          <button id="addBtn">Додати</button>
+        <div class="group" id="tools">
+          <button class="tool active" data-tool="select" title="Виділення (V)">↖</button>
+          <button class="tool" data-tool="rectangle" title="Прямокутник (R)">▭</button>
+          <button class="tool" data-tool="circle" title="Коло (C)">◯</button>
+          <button class="tool" data-tool="line" title="Лінія (L)">╱</button>
         </div>
 
-        <div class="panel" style="margin-top: 12px;">
-          <h3>Файл</h3>
-          <label for="fileName">Назва файлу</label>
-          <input id="fileName" value="document.json" />
-          <div class="row">
-            <button id="saveBtn">Зберегти</button>
-            <button id="loadBtn" class="secondary">Відкрити</button>
-          </div>
-          <button id="exportBtn" class="secondary">Експорт у SVG</button>
-        </div>
-      </div>
-
-      <div class="canvas-wrap">
-        <canvas id="canvas" width="800" height="600"></canvas>
-        <div id="status"></div>
-        <div class="muted">Клікніть фігуру, щоб вибрати. Перетягніть, щоб перемістити. Delete — видалити.</div>
-      </div>
-
-      <div>
-        <div class="panel">
-          <h3>Фігури</h3>
-          <ul id="shapeList"></ul>
-          <div id="emptyHint" class="muted">Документ порожній</div>
+        <div class="group">
+          <button id="undoBtn" class="icon" title="Скасувати (Ctrl+Z)">↶</button>
+          <button id="redoBtn" class="icon" title="Повторити (Ctrl+Y)">↷</button>
         </div>
 
-        <div class="panel" style="margin-top: 12px;">
-          <h3>Вибрана фігура</h3>
-          <div id="selectedInfo" class="muted">Нічого не вибрано</div>
-          <div id="moveBox" hidden>
-            <div class="row">
-              <div>
-                <label for="dx">dx</label>
-                <input id="dx" type="number" value="10" />
+        <div class="spacer"></div>
+
+        <div class="group">
+          <input id="fileName" value="document.json" title="Ім'я файлу" />
+          <button id="saveBtn">Зберегти</button>
+          <button id="loadBtn">Відкрити</button>
+          <button id="exportBtn">Експорт SVG</button>
+        </div>
+      </header>
+
+      <main>
+        <aside class="panel left">
+          <h3>Шари</h3>
+          <ul id="layers"></ul>
+          <p id="emptyHint" class="muted">Полотно порожнє. Оберіть інструмент і намалюйте фігуру мишкою.</p>
+        </aside>
+
+        <section class="stage">
+          <canvas id="canvas" width="800" height="600"></canvas>
+        </section>
+
+        <aside class="panel right">
+          <h3>Властивості</h3>
+          <p id="noSelection" class="muted">Оберіть фігуру на полотні або в списку шарів.</p>
+
+          <div id="props" hidden>
+            <div class="section" id="geometry"></div>
+
+            <div class="section">
+              <div class="field" id="fillRow">
+                <label><input type="checkbox" id="fillOn" /> Заливка</label>
+                <input type="color" id="fillColor" />
               </div>
-              <div>
-                <label for="dy">dy</label>
-                <input id="dy" type="number" value="10" />
+              <div class="field">
+                <label>Контур</label>
+                <input type="color" id="strokeColor" />
+              </div>
+              <div class="field">
+                <label>Товщина</label>
+                <div class="range">
+                  <input type="range" id="strokeWidth" min="1" max="20" />
+                  <span id="strokeWidthValue"></span>
+                </div>
               </div>
             </div>
-            <button id="moveBtn">Перемістити</button>
-            <button id="deleteBtn" class="danger">Видалити</button>
+
+            <div class="section">
+              <label>Порядок</label>
+              <div class="row">
+                <button id="layerUp" class="secondary">▲ Вище</button>
+                <button id="layerDown" class="secondary">▼ Нижче</button>
+              </div>
+            </div>
+
+            <button id="deleteBtn" class="danger">Видалити фігуру</button>
           </div>
-        </div>
-      </div>
+        </aside>
+      </main>
+
+      <footer id="status"></footer>
     </div>
 
     <script src="app.js" type="module"></script>

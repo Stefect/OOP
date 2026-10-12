@@ -61,6 +61,10 @@ export class Editor {
     return this.#document;
   }
 
+  replaceDocument(data) {
+    this.#document = Document.fromJSON(data);
+  }
+
   async execute(line) {
     const [name, ...args] = line.trim().split(/\s+/);
     if (!name) {

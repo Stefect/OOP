@@ -33,6 +33,15 @@ async function handleApi(req, res, url) {
     return sendJson(res, 200, editor.document.toJSON());
   }
 
+  if (req.method === "PUT" && url.pathname === "/api/document") {
+    try {
+      editor.replaceDocument(await readJsonBody(req));
+      return sendJson(res, 200, editor.document.toJSON());
+    } catch (error) {
+      return sendJson(res, 400, { error: error.message });
+    }
+  }
+
   if (req.method === "POST" && url.pathname === "/api/command") {
     const { line } = await readJsonBody(req);
     try {
