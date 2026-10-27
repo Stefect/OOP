@@ -8,14 +8,35 @@
   </head>
   <body>
     <div class="app">
+      <nav class="menubar" aria-label="Головне меню">
+        <div class="menu" id="fileMenu">
+          <button class="menu-trigger" id="fileMenuTrigger" type="button">Файл</button>
+          <div class="menu-dropdown" id="fileMenuDropdown">
+            <button type="button" data-action="new">Новий</button>
+            <button type="button" data-action="open">Відкрити...</button>
+            <button type="button" data-action="save">Зберегти</button>
+            <button type="button" data-action="saveAs">Зберегти як...</button>
+            <button type="button" data-action="export">Експорт SVG...</button>
+          </div>
+        </div>
+        <div class="menu" id="helpMenu">
+          <button class="menu-trigger" id="helpMenuTrigger" type="button">Довідка</button>
+          <div class="menu-dropdown" id="helpMenuDropdown">
+            <button type="button" data-action="about">Про програму</button>
+          </div>
+        </div>
+      </nav>
+
+      <div class="ribbon">
+        <div class="ribbon-tabs" id="ribbonTabs"></div>
+        <div class="ribbon-body" id="ribbonBody"></div>
+      </div>
+
       <header class="topbar">
         <div class="brand">Vector</div>
 
-        <div class="group" id="tools">
+        <div class="group" id="quickTools">
           <button class="tool active" data-tool="select" title="Виділення (V)">↖</button>
-          <button class="tool" data-tool="rectangle" title="Прямокутник (R)">▭</button>
-          <button class="tool" data-tool="circle" title="Коло (C)">◯</button>
-          <button class="tool" data-tool="line" title="Лінія (L)">╱</button>
         </div>
 
         <div class="group">
@@ -85,6 +106,7 @@
       <footer id="status"></footer>
     </div>
 
+    <input id="fileInput" type="file" accept=".json,application/json" hidden />
     <script src="app.js" type="module"></script>
   </body>
 </html>

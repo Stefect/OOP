@@ -5,6 +5,6 @@ export const DEFAULT_STYLE = Object.freeze({
 });
 
 export const CANVAS = Object.freeze({
-  width: 800,
-  height: 600,
+  width: 2000,
+  height: 2000,
 });
