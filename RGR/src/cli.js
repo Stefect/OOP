@@ -5,37 +5,49 @@ import { Editor } from "./Editor.js";
 const PROMPT = "> ";
 const EXIT_COMMAND = "exit";
 
-async function run() {
-  const editor = new Editor();
-  const rl = createInterface({ input: stdin, output: stdout, prompt: PROMPT });
-  let isClosed = false;
-  rl.on("close", () => {
-    isClosed = true;
-  });
+export class CliApplication {
+  #editor;
+  #input;
+  #output;
 
-  console.log("Векторний графічний редактор. Введіть help для довідки.");
-  rl.prompt();
-
-  for await (const line of rl) {
-    if (line.trim().toLowerCase() === EXIT_COMMAND) {
-      break;
-    }
-
-    try {
-      const result = await editor.execute(line);
-      if (result) {
-        console.log(result);
-      }
-    } catch (error) {
-      console.log(`Помилка: ${error.message}`);
-    }
-
-    if (!isClosed) {
-      rl.prompt();
-    }
+  constructor(editor = new Editor(), input = stdin, output = stdout) {
+    this.#editor = editor;
+    this.#input = input;
+    this.#output = output;
   }
 
-  rl.close();
+  async run() {
+    const rl = createInterface({ input: this.#input, output: this.#output, prompt: PROMPT });
+    let isClosed = false;
+    rl.on("close", () => {
+      isClosed = true;
+    });
+
+    this.#output.write("Векторний графічний редактор. Введіть help для довідки.\n");
+    rl.prompt();
+
+    for await (const line of rl) {
+      if (line.trim().toLowerCase() === EXIT_COMMAND) {
+        break;
+      }
+
+      try {
+        const result = await this.#editor.execute(line);
+        if (result) {
+          console.log(result);
+        }
+      } catch (error) {
+        console.log(`Помилка: ${error.message}`);
+      }
+
+      if (!isClosed) {
+        rl.prompt();
+      }
+    }
+
+    rl.close();
+  }
 }
 
-run();
+const application = new CliApplication();
+application.run();

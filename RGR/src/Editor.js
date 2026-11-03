@@ -1,5 +1,5 @@
 import { Document } from "./Document.js";
-import { exportSvg, loadDocument, saveDocument } from "./Storage.js";
+import { documentStorage } from "./Storage.js";
 
 const HELP = [
   "Команди:",
@@ -15,29 +15,6 @@ const HELP = [
   "  help                            - показати довідку",
   "  exit                            - вийти",
 ].join("\n");
-
-function parseNumber(token) {
-  const value = Number(token);
-  if (!Number.isFinite(value)) {
-    throw new Error(`Очікувалось число, отримано: ${token ?? "нічого"}`);
-  }
-  return value;
-}
-
-function parseId(token) {
-  const value = parseNumber(token);
-  if (!Number.isInteger(value)) {
-    throw new Error(`id має бути цілим числом, отримано: ${token}`);
-  }
-  return value;
-}
-
-function requirePath(args) {
-  if (args.length === 0) {
-    throw new Error("Вкажіть шлях до файлу");
-  }
-  return args.join(" ");
-}
 
 export class Editor {
   #document;
@@ -57,8 +34,8 @@ export class Editor {
     ]);
   }
 
-  get document() {
-    return this.#document;
+  documentToJSON() {
+    return this.#document.toJSON();
   }
 
   replaceDocument(data) {
@@ -78,24 +55,47 @@ export class Editor {
     return command(args);
   }
 
+  #parseNumber(token) {
+    const value = Number(token);
+    if (!Number.isFinite(value)) {
+      throw new Error(`Очікувалось число, отримано: ${token ?? "нічого"}`);
+    }
+    return value;
+  }
+
+  #parseId(token) {
+    const value = this.#parseNumber(token);
+    if (!Number.isInteger(value)) {
+      throw new Error(`id має бути цілим числом, отримано: ${token}`);
+    }
+    return value;
+  }
+
+  #requirePath(args) {
+    if (args.length === 0) {
+      throw new Error("Вкажіть шлях до файлу");
+    }
+    return args.join(" ");
+  }
+
   #add([type, ...values]) {
     if (!type) {
       throw new Error("Вкажіть тип фігури: rect, circle або line");
     }
     const shape = this.#document.add(
       type.toLowerCase(),
-      values.map(parseNumber),
+      values.map((token) => this.#parseNumber(token)),
     );
     return `Додано ${shape.describe()}`;
   }
 
   #move([id, dx, dy]) {
-    this.#document.move(parseId(id), parseNumber(dx), parseNumber(dy));
+    this.#document.move(this.#parseId(id), this.#parseNumber(dx), this.#parseNumber(dy));
     return `Фігуру #${id} переміщено`;
   }
 
   #delete([id]) {
-    this.#document.remove(parseId(id));
+    this.#document.remove(this.#parseId(id));
     return `Фігуру #${id} видалено`;
   }
 
@@ -108,20 +108,20 @@ export class Editor {
   }
 
   async #save(args) {
-    const path = requirePath(args);
-    await saveDocument(this.#document, path);
+    const path = this.#requirePath(args);
+    await documentStorage.save(this.#document, path);
     return `Збережено: ${path}`;
   }
 
   async #load(args) {
-    const path = requirePath(args);
-    this.#document = await loadDocument(path);
+    const path = this.#requirePath(args);
+    this.#document = await documentStorage.load(path);
     return `Відкрито: ${path}`;
   }
 
   async #export(args) {
-    const path = requirePath(args);
-    await exportSvg(this.#document, path);
+    const path = this.#requirePath(args);
+    await documentStorage.exportSvg(this.#document, path);
     return `Експортовано у SVG: ${path}`;
   }
 }

@@ -1,12 +1,12 @@
 import { CANVAS } from "./constants.js";
-import { createShape, restoreShape } from "./shapes/factory.js";
+import { shapeFactory } from "./shapes/factory.js";
 
 export class Document {
   #shapes = new Map();
   #nextId = 1;
 
   add(type, values) {
-    const shape = createShape(type, this.#nextId, values);
+    const shape = shapeFactory.create(type, this.#nextId, values);
     this.#insert(shape);
     return shape;
   }
@@ -29,7 +29,7 @@ export class Document {
   }
 
   list() {
-    return [...this.#shapes.values()];
+    return Object.freeze([...this.#shapes.values()]);
   }
 
   toJSON() {
@@ -51,7 +51,7 @@ export class Document {
   static fromJSON(data) {
     const document = new Document();
     for (const item of data.shapes ?? []) {
-      document.#insert(restoreShape(item));
+      document.#insert(shapeFactory.restore(item));
     }
     return document;
   }

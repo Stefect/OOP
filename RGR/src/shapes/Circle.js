@@ -7,7 +7,7 @@ export class Circle extends Shape {
   static nonNegativeFields = ["r"];
 
   move(dx, dy) {
-    this.geometry.cx += dx;
-    this.geometry.cy += dy;
+    this._geometry.cx += dx;
+    this._geometry.cy += dy;
   }
 }

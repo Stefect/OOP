@@ -7,7 +7,7 @@ export class Ellipse extends Shape {
   static nonNegativeFields = ["rx", "ry"];
 
   move(dx, dy) {
-    this.geometry.cx += dx;
-    this.geometry.cy += dy;
+    this._geometry.cx += dx;
+    this._geometry.cy += dy;
   }
 }

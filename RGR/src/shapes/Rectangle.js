@@ -7,7 +7,7 @@ export class Rectangle extends Shape {
   static nonNegativeFields = ["width", "height"];
 
   move(dx, dy) {
-    this.geometry.x += dx;
-    this.geometry.y += dy;
+    this._geometry.x += dx;
+    this._geometry.y += dy;
   }
 }
