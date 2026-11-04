@@ -1,3 +1,5 @@
+import { History } from "./history.js";
+
 const CANVAS = { width: 2000, height: 2000 };
 const GRID = 20;
 const HANDLE = 8;
@@ -54,6 +56,26 @@ let tool = "select";
 let interaction = null; // поточна дія мишкою
 let history = [];
 let historyIndex = -1;
+
+const appState = {
+  get shapes() { return shapes; },
+  set shapes(value) { shapes = value; },
+  get draft() { return draft; },
+  set draft(value) { draft = value; },
+  get preview() { return preview; },
+  set preview(value) { preview = value; },
+  get selectedId() { return selectedId; },
+  set selectedId(value) { selectedId = value; },
+  get tool() { return tool; },
+  set tool(value) { tool = value; },
+  get interaction() { return interaction; },
+  set interaction(value) { interaction = value; },
+  get history() { return history; },
+  set history(value) { history = value; },
+  get historyIndex() { return historyIndex; },
+  set historyIndex(value) { historyIndex = value; },
+};
+const historyManager = new History(appState);
 let syncChain = Promise.resolve();
 
 // ---------- Зв'язок із сервером ----------
@@ -78,8 +100,7 @@ async function loadFromServer() {
   const data = await response.json();
   shapes = data.shapes;
   selectedId = null;
-  history = [clone(shapes)];
-  historyIndex = 0;
+  historyManager.reset(shapes);
   render();
 }
 
@@ -108,29 +129,19 @@ function setStatus(text, isError = false) {
 // ---------- Історія змін (Undo / Redo) ----------
 
 function commit(next) {
-  shapes = next;
-  history = history.slice(0, historyIndex + 1);
-  history.push(clone(next));
-  if (history.length > MAX_HISTORY) {
-    history.shift();
-  }
-  historyIndex = history.length - 1;
+  historyManager.commit(next);
   syncToServer();
   render();
 }
 
 function undo() {
-  if (historyIndex <= 0) return;
-  historyIndex--;
-  shapes = clone(history[historyIndex]);
+  if (!historyManager.undo()) return;
   syncToServer();
   render();
 }
 
 function redo() {
-  if (historyIndex >= history.length - 1) return;
-  historyIndex++;
-  shapes = clone(history[historyIndex]);
+  if (!historyManager.redo()) return;
   syncToServer();
   render();
 }
@@ -949,8 +960,8 @@ document.querySelectorAll("button.tool").forEach((button) => {
 });
 
 function updateHistoryButtons() {
-  $("undoBtn").disabled = historyIndex <= 0;
-  $("redoBtn").disabled = historyIndex >= history.length - 1;
+  $("undoBtn").disabled = !historyManager.canUndo();
+  $("redoBtn").disabled = !historyManager.canRedo();
 }
 
 $("undoBtn").addEventListener("click", undo);
@@ -1024,8 +1035,7 @@ function newScene() {
   closeMenus();
   shapes = [];
   selectedId = null;
-  history = [[]];
-  historyIndex = 0;
+  historyManager.reset(shapes);
   syncToServer();
   render();
   setStatus("Створено нову сцену");
