@@ -1,4 +1,5 @@
 import { History } from "./history.js";
+import { ServerSync } from "./serverSync.js";
 
 const CANVAS = { width: 2000, height: 2000 };
 const GRID = 20;
@@ -76,49 +77,7 @@ const appState = {
   set historyIndex(value) { historyIndex = value; },
 };
 const historyManager = new History(appState);
-let syncChain = Promise.resolve();
-
-// ---------- Зв'язок із сервером ----------
-
-function syncToServer() {
-  syncChain = syncChain.then(async () => {
-    const response = await fetch("/api/document", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shapes }),
-    });
-    if (!response.ok) {
-      const data = await response.json();
-      setStatus(data.error, true);
-    }
-  });
-  return syncChain;
-}
-
-async function loadFromServer() {
-  const response = await fetch("/api/document");
-  const data = await response.json();
-  shapes = data.shapes;
-  selectedId = null;
-  historyManager.reset(shapes);
-  render();
-}
-
-async function fileOperation(line) {
-  await syncChain;
-  const response = await fetch("/api/command", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ line }),
-  });
-  const data = await response.json();
-  if (!response.ok) {
-    setStatus(data.error, true);
-    return false;
-  }
-  setStatus(data.message);
-  return true;
-}
+const serverSync = new ServerSync(appState, historyManager, setStatus, render);
 
 function setStatus(text, isError = false) {
   const status = $("status");
@@ -130,19 +89,19 @@ function setStatus(text, isError = false) {
 
 function commit(next) {
   historyManager.commit(next);
-  syncToServer();
+  serverSync.sync();
   render();
 }
 
 function undo() {
   if (!historyManager.undo()) return;
-  syncToServer();
+  serverSync.sync();
   render();
 }
 
 function redo() {
   if (!historyManager.redo()) return;
-  syncToServer();
+  serverSync.sync();
   render();
 }
 
@@ -974,18 +933,18 @@ function fileName() {
 }
 
 $("saveBtn").addEventListener("click", () => {
-  fileOperation(`save ${fileName()}`);
+  serverSync.fileOperation(`save ${fileName()}`);
 });
 
 $("loadBtn").addEventListener("click", async () => {
-  if (await fileOperation(`load ${fileName()}`)) {
-    await loadFromServer();
+  if (await serverSync.fileOperation(`load ${fileName()}`)) {
+    await serverSync.load();
   }
 });
 
 $("exportBtn").addEventListener("click", () => {
   const name = fileName().replace(/\.json$/i, "") + ".svg";
-  fileOperation(`export ${name}`);
+  serverSync.fileOperation(`export ${name}`);
 });
 
 // ---------- Клавіатура ----------
@@ -1036,7 +995,7 @@ function newScene() {
   shapes = [];
   selectedId = null;
   historyManager.reset(shapes);
-  syncToServer();
+  serverSync.sync();
   render();
   setStatus("Створено нову сцену");
 }
@@ -1055,7 +1014,7 @@ async function openSelectedFile(file) {
       const result = await response.json();
       throw new Error(result.error || "Не вдалося відкрити файл");
     }
-    await loadFromServer();
+    await serverSync.load();
     setStatus(`Відкрито: ${file.name}`);
   } catch (error) {
     setStatus(error.message, true);
@@ -1198,4 +1157,4 @@ function renderRibbon() {
 
 renderRibbon();
 setTool("select");
-loadFromServer().catch(() => setStatus("Не вдалося завантажити документ із сервера", true));
+serverSync.load().catch(() => setStatus("Не вдалося завантажити документ із сервера", true));
