@@ -1,6 +1,7 @@
 import { History } from "./history.js";
 import { ServerSync } from "./serverSync.js";
 import { Renderer } from "./renderer.js";
+import { InteractionController } from "./interactionController.js";
 
 const CANVAS = { width: 2000, height: 2000 };
 const GRID = 20;
@@ -80,6 +81,13 @@ const appState = {
 const historyManager = new History(appState);
 const serverSync = new ServerSync(appState, historyManager, setStatus, render);
 const renderer = new Renderer(appState, canvas, ctx);
+const interactionController = new InteractionController(appState, renderer, canvas, {
+  commit,
+  render,
+  setTool,
+  nextId: () => nextId(),
+});
+interactionController.bind();
 
 function setStatus(text, isError = false) {
   const status = $("status");
@@ -121,156 +129,6 @@ function nextId() {
   return shapes.reduce((max, s) => Math.max(max, s.id), 0) + 1;
 }
 
-function canvasPoint(event) {
-  const rect = canvas.getBoundingClientRect();
-  return {
-    x: Math.round(((event.clientX - rect.left) * CANVAS.width) / rect.width),
-    y: Math.round(((event.clientY - rect.top) * CANVAS.height) / rect.height),
-  };
-}
-
-function setTool(name) {
-  tool = name;
-  document.querySelectorAll("button.tool").forEach((button) => {
-    button.classList.toggle("active", button.dataset.tool === name);
-  });
-  canvas.classList.toggle("crosshair", name !== "select");
-}
-
-function isTyping() {
-  const tag = document.activeElement?.tagName;
-  return tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA";
-}
-
-// ---------- Геометрія ----------
-
-function distanceToSegment(px, py, x1, y1, x2, y2) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const lengthSq = dx * dx + dy * dy;
-  let t = lengthSq === 0 ? 0 : ((px - x1) * dx + (py - y1) * dy) / lengthSq;
-  t = Math.max(0, Math.min(1, t));
-  return Math.hypot(px - (x1 + t * dx), py - (y1 + t * dy));
-}
-
-function hitShape(shape, x, y) {
-  const g = shape.geometry;
-  if (shape.type === "rectangle") {
-    return x >= g.x && x <= g.x + g.width && y >= g.y && y <= g.y + g.height;
-  }
-  if (shape.type === "circle") {
-    return Math.hypot(x - g.cx, y - g.cy) <= g.r;
-  }
-  if (shape.type === "ellipse") {
-    const rx = Math.max(1, g.rx);
-    const ry = Math.max(1, g.ry);
-    const nx = (x - g.cx) / rx;
-    const ny = (y - g.cy) / ry;
-    return nx * nx + ny * ny <= 1;
-  }
-  if (BOX_TYPES.has(shape.type)) {
-    return x >= g.x && x <= g.x + g.width && y >= g.y && y <= g.y + g.height;
-  }
-  if (shape.type === "arc") {
-    return Math.hypot(x - g.cx, y - g.cy) <= g.r;
-  }
-  return distanceToSegment(x, y, g.x1, g.y1, g.x2, g.y2) <= HIT;
-}
-
-
-// ---------- Мишка ----------
-
-function startInteraction(next) {
-  draft = clone(shapes);
-  interaction = next;
-}
-
-canvas.addEventListener("mousedown", (event) => {
-  if (event.button !== 0) return;
-  const point = canvasPoint(event);
-
-  if (tool !== "select") {
-    interaction = { mode: "create", start: point, end: point };
-    preview = null;
-    return;
-  }
-
-  const selected = selectedShape();
-  if (selected) {
-    const handle = hitHandle(selected, point.x, point.y);
-    if (handle) {
-      startInteraction({ mode: "resize", handle: handle.name, last: point });
-      return;
-    }
-  }
-
-  const hit = [...shapes].reverse().find((s) => hitShape(s, point.x, point.y));
-  selectedId = hit ? hit.id : null;
-  if (hit) {
-    startInteraction({ mode: "move", last: point, moved: false });
-  }
-  render();
-});
-
-canvas.addEventListener("mousemove", (event) => {
-  if (!interaction) return;
-  const point = canvasPoint(event);
-
-  if (interaction.mode === "create") {
-    interaction.end = point;
-    const geometry = geometryFromDrag(tool, interaction.start, point);
-    preview = { id: 0, type: tool, geometry, style: { ...DEFAULT_STYLE } };
-    render();
-    return;
-  }
-
-  const shape = draft.find((s) => s.id === selectedId);
-  if (!shape) return;
-
-  if (interaction.mode === "resize") {
-    resizeShape(shape, interaction.handle, point.x, point.y);
-  } else {
-    const dx = point.x - interaction.last.x;
-    const dy = point.y - interaction.last.y;
-    if (dx === 0 && dy === 0) return;
-    moveShape(shape, dx, dy);
-    interaction.moved = true;
-  }
-  interaction.last = point;
-  render();
-});
-
-function finishInteraction() {
-  if (!interaction) return;
-  const finished = interaction;
-  interaction = null;
-
-  if (finished.mode === "create") {
-    const geometry = preview?.geometry;
-    preview = null;
-    if (geometry && isLargeEnough(tool, geometry)) {
-      const id = nextId();
-      const shape = { id, type: tool, geometry, style: { ...DEFAULT_STYLE } };
-      selectedId = id;
-      setTool("select");
-      commit([...shapes, shape]);
-    } else {
-      render();
-    }
-    return;
-  }
-
-  const next = draft;
-  draft = null;
-  if (JSON.stringify(next) !== JSON.stringify(shapes)) {
-    commit(next);
-  } else {
-    render();
-  }
-}
-
-canvas.addEventListener("mouseup", finishInteraction);
-canvas.addEventListener("mouseleave", finishInteraction);
 
 // ---------- Редагування вибраної фігури ----------
 
