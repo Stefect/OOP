@@ -25,7 +25,7 @@ export class LayersPanel {
 
     for (const shape of [...this.state.shapes].reverse()) {
       const item = document.createElement("li");
-      item.classList.toggle("selected", shape.id === this.state.selectedId);
+      item.classList.toggle("selected", this.state.selectedIds.includes(shape.id));
 
       const glyph = document.createElement("span");
       glyph.className = "glyph";

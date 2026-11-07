@@ -57,6 +57,7 @@ let shapes = [];        // зафіксований стан документа
 let draft = null;       // копія, що змінюється під час перетягування
 let preview = null;     // фігура, яка малюється інструментом
 let selectedId = null;
+let selectedIds = [];
 let tool = "select";
 let interaction = null; // поточна дія мишкою
 let history = [];
@@ -71,6 +72,8 @@ const appState = {
   set preview(value) { preview = value; },
   get selectedId() { return selectedId; },
   set selectedId(value) { selectedId = value; },
+  get selectedIds() { return selectedIds; },
+  set selectedIds(value) { selectedIds = value; },
   get tool() { return tool; },
   set tool(value) { tool = value; },
   get interaction() { return interaction; },
@@ -201,10 +204,11 @@ $("layerDown").addEventListener("click", () => moveLayer(-1));
 $("deleteBtn").addEventListener("click", removeSelected);
 
 function removeSelected() {
-  if (selectedId === null) return;
-  const id = selectedId;
+  if (selectedIds.length === 0 && selectedId === null) return;
+  const ids = selectedIds.length ? selectedIds : [selectedId];
   selectedId = null;
-  commit(shapes.filter((s) => s.id !== id));
+  selectedIds = [];
+  commit(shapes.filter((s) => !ids.includes(s.id)));
 }
 
 function duplicateSelected() {
@@ -274,6 +278,7 @@ document.addEventListener("keydown", (event) => {
     removeSelected();
   } else if (event.key === "Escape") {
     selectedId = null;
+    selectedIds = [];
     setTool("select");
     render();
   } else if (!mod && key === "g") {
@@ -307,6 +312,7 @@ function newScene() {
   closeMenus();
   shapes = [];
   selectedId = null;
+  selectedIds = [];
   historyManager.reset(shapes);
   serverSync.sync();
   render();

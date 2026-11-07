@@ -27,6 +27,7 @@ export class ServerSync {
     const data = await response.json();
     this.state.shapes = data.shapes;
     this.state.selectedId = null;
+    this.state.selectedIds = [];
     this.historyManager.reset(this.state.shapes);
     this.render();
   }

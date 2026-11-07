@@ -214,7 +214,21 @@ export class InteractionController {
     }
 
     const hit = [...this.state.shapes].reverse().find((s) => this.hitShape(s, point.x, point.y));
-    this.state.selectedId = hit ? hit.id : null;
+    if (event.shiftKey && hit) {
+      const idx = this.state.selectedIds.indexOf(hit.id);
+      if (idx >= 0) {
+        this.state.selectedIds.splice(idx, 1);
+      } else {
+        this.state.selectedIds.push(hit.id);
+      }
+      this.state.selectedId = hit.id;
+    } else if (hit) {
+      this.state.selectedIds = [hit.id];
+      this.state.selectedId = hit.id;
+    } else {
+      this.state.selectedIds = [];
+      this.state.selectedId = null;
+    }
     if (hit) {
       this.startInteraction({ mode: "move", last: point, moved: false });
     }
@@ -242,7 +256,14 @@ export class InteractionController {
       const dx = point.x - this.state.interaction.last.x;
       const dy = point.y - this.state.interaction.last.y;
       if (dx === 0 && dy === 0) return;
-      this.moveShape(shape, dx, dy);
+      if (this.state.selectedIds.length > 1) {
+        for (const id of this.state.selectedIds) {
+          const s = this.state.draft.find((x) => x.id === id);
+          if (s) this.moveShape(s, dx, dy);
+        }
+      } else {
+        this.moveShape(shape, dx, dy);
+      }
       this.state.interaction.moved = true;
     }
     this.state.interaction.last = point;
