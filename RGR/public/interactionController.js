@@ -12,6 +12,16 @@ export class InteractionController {
     this.render = callbacks.render;
     this.setTool = callbacks.setTool;
     this.nextId = callbacks.nextId;
+    this.snapEnabled = false;
+  }
+
+  toggleSnap() {
+    this.snapEnabled = !this.snapEnabled;
+    return this.snapEnabled;
+  }
+
+  snap(value) {
+    return this.snapEnabled ? Math.round(value / 20) * 20 : value;
   }
 
   canvasPoint(event) {
@@ -93,6 +103,11 @@ export class InteractionController {
     } else {
       Object.assign(g, { x2: x, y2: y });
     }
+    if (this.snapEnabled) {
+      for (const key of Object.keys(g)) {
+        if (typeof g[key] === "number") g[key] = this.snap(g[key]);
+      }
+    }
   }
 
   moveShape(shape, dx, dy) {
@@ -118,9 +133,18 @@ export class InteractionController {
       g.x2 += dx;
       g.y2 += dy;
     }
+    if (this.snapEnabled) {
+      for (const key of Object.keys(g)) {
+        if (typeof g[key] === "number") g[key] = this.snap(g[key]);
+      }
+    }
   }
 
   geometryFromDrag(type, a, b) {
+    if (this.snapEnabled) {
+      a = { x: this.snap(a.x), y: this.snap(a.y) };
+      b = { x: this.snap(b.x), y: this.snap(b.y) };
+    }
     if (type === "rectangle") {
       return {
         x: Math.min(a.x, b.x),

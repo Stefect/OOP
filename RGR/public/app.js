@@ -276,6 +276,10 @@ document.addEventListener("keydown", (event) => {
     selectedId = null;
     setTool("select");
     render();
+  } else if (!mod && key === "g") {
+    event.preventDefault();
+    const enabled = interactionController.toggleSnap();
+    setStatus(enabled ? "Прив'язка до сітки увімкнена" : "Прив'язка до сітки вимкнена");
   } else if (!mod && TOOL_BY_KEY[key]) {
     setTool(TOOL_BY_KEY[key]);
   }
