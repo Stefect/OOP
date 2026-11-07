@@ -8,34 +8,6 @@ import { Ribbon } from "./ribbon.js";
 
 const CANVAS = { width: 2000, height: 2000 };
 
-const BOX_TYPES = new Set(["rectangle","square","rhombus","diamond","cube","cylinder","triangle","roundedrect","roundedrectangle","star","callout","speechbubble","flowdecision","flowprocess","flowterminator","cuboid","pyramid","cone","sphere","parallelogram","text","label","polygon","polyline","bezier","arrowbox"]);
-const TYPE_LABELS = {
-  rectangle: "Прямокутник", square: "Квадрат", circle: "Коло", ellipse: "Еліпс", rhombus: "Ромб", diamond: "Ромб", cube: "Куб", cylinder: "Циліндр",
-  triangle: "Трикутник", roundedrect: "Скруглений прямокутник", star: "Зірка", callout: "Виноска", speechbubble: "Хмаринка",
-  flowdecision: "Рішення", flowprocess: "Процес", flowterminator: "Термінатор", cuboid: "Паралелепіпед", pyramid: "Піраміда", cone: "Конус", sphere: "Сфера",
-  parallelogram: "Паралелограм", text: "Текст", polygon: "Багатокутник", polyline: "Ломана", bezier: "Крива Безьє", arc: "Дуга/Сектор", line: "Лінія", arrow: "Стрілка",
-  group: "Група"
-};
-const TYPE_GLYPHS = {
-  rectangle: "R", square: "S", circle: "O", ellipse: "O", rhombus: "D", diamond: "D", cube: "C", cylinder: "Y",
-  triangle: "T", roundedrect: "U", star: "*", callout: "!", speechbubble: "!", flowdecision: "?", flowprocess: "P",
-  flowterminator: "O", cuboid: "B", pyramid: "A", cone: "V", sphere: "●", parallelogram: "P", text: "T",
-  polygon: "G", polyline: "/", bezier: "~", arc: ")", line: "/", arrow: "->", group: "G",
-};
-const TOOL_BY_KEY = { v: "select", r: "rectangle", c: "circle", e: "ellipse", l: "line", a: "arrow", t: "text" };
-const GEOMETRY_FIELDS = {
-  circle: [["cx", "X центру"], ["cy", "Y центру"], ["r", "Радіус"]],
-  ellipse: [["cx", "X центру"], ["cy", "Y центру"], ["rx", "Радіус X"], ["ry", "Радіус Y"]],
-  line: [["x1", "X1"], ["y1", "Y1"], ["x2", "X2"], ["y2", "Y2"]],
-  arrow: [["x1", "X1"], ["y1", "Y1"], ["x2", "X2"], ["y2", "Y2"]],
-  arc: [["cx", "X центру"], ["cy", "Y центру"], ["r", "Радіус"], ["start", "Початок"], ["end", "Кінець"]],
-};
-for (const type of BOX_TYPES) {
-  GEOMETRY_FIELDS[type] = [["x", "X"], ["y", "Y"], ["width", "Ширина"], ["height", "Висота"]];
-}
-const MIN_SIZE_FIELDS = new Set(["width", "height", "r", "rx", "ry"]);
-const DEFAULT_STYLE = { stroke: "#2b5797", fill: "#cfe2ff", strokeWidth: 2 };
-
 const $ = (id) => document.getElementById(id);
 const canvas = $("canvas");
 const ctx = canvas.getContext("2d");
@@ -381,7 +353,7 @@ async function openSelectedFile(file) {
 
 function saveAsDownload() {
   closeMenus();
-  const data = { shapes };
+  const data = { shapes, groups };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
