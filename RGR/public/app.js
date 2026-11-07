@@ -4,6 +4,7 @@ import { Renderer } from "./renderer.js";
 import { InteractionController } from "./interactionController.js";
 import { LayersPanel } from "./layersPanel.js";
 import { PropertiesPanel } from "./propertiesPanel.js";
+import { Ribbon } from "./ribbon.js";
 
 const CANVAS = { width: 2000, height: 2000 };
 
@@ -94,6 +95,7 @@ const interactionController = new InteractionController(appState, renderer, canv
 interactionController.bind();
 const layersPanel = new LayersPanel(appState, { selectShape });
 const propertiesPanel = new PropertiesPanel(appState, { updateSelected });
+const ribbon = new Ribbon({ setTool });
 
 function setStatus(text, isError = false) {
   const status = $("status");
@@ -418,75 +420,9 @@ $("fileInput").addEventListener("change", (event) => {
 });
 
 
-// ---------- Стрічка інструментів (вкладки) ----------
-
-const RIBBON_TABS = [
-  { id: "main", label: "Головна" },
-  { id: "basic", label: "2D фігури" },
-  { id: "lines", label: "Лінії" },
-  { id: "solid", label: "3D" },
-  { id: "flow", label: "Схеми" },
-  { id: "text", label: "Текст" },
-];
-
-const RIBBON_TOOLS = {
-  main: ["select", "rectangle", "circle", "ellipse", "text"],
-  basic: ["rectangle", "square", "circle", "ellipse", "triangle", "rhombus", "parallelogram", "star", "roundedrect", "polygon", "arc"],
-  lines: ["line", "arrow", "polyline", "bezier"],
-  solid: ["cube", "cuboid", "cylinder", "cone", "pyramid", "sphere"],
-  flow: ["flowprocess", "flowdecision", "flowterminator", "callout", "speechbubble"],
-  text: ["text"],
-};
-
-function renderRibbon() {
-  const tabsRoot = $("ribbonTabs");
-  const bodyRoot = $("ribbonBody");
-  tabsRoot.replaceChildren();
-  bodyRoot.replaceChildren();
-
-  RIBBON_TABS.forEach((tab, index) => {
-    const tabBtn = document.createElement("button");
-    tabBtn.className = "ribbon-tab" + (index === 0 ? " active" : "");
-    tabBtn.textContent = tab.label;
-    tabBtn.dataset.tab = tab.id;
-    tabBtn.addEventListener("click", () => {
-      document.querySelectorAll(".ribbon-tab").forEach((b) => b.classList.remove("active"));
-      tabBtn.classList.add("active");
-      document.querySelectorAll(".ribbon-panel").forEach((p) => p.classList.remove("active"));
-      const panel = document.querySelector(`.ribbon-panel[data-tab="${tab.id}"]`);
-      if (panel) panel.classList.add("active");
-    });
-    tabsRoot.append(tabBtn);
-  });
-
-  RIBBON_TABS.forEach((tab, index) => {
-    const panel = document.createElement("div");
-    panel.className = "ribbon-panel" + (index === 0 ? " active" : "");
-    panel.dataset.tab = tab.id;
-    const toolRow = document.createElement("div");
-    toolRow.className = "tool-row";
-    for (const type of RIBBON_TOOLS[tab.id] || []) {
-      const btn = document.createElement("button");
-      btn.className = "tool";
-      btn.dataset.tool = type;
-      btn.title = TYPE_LABELS[type] || type;
-      const icon = document.createElement("span");
-      icon.className = "tool-icon";
-      icon.textContent = TYPE_GLYPHS[type] || "?";
-      const label = document.createElement("span");
-      label.className = "tool-label";
-      label.textContent = TYPE_LABELS[type] || type;
-      btn.append(icon, label);
-      btn.addEventListener("click", () => setTool(type));
-      toolRow.append(btn);
-    }
-    panel.append(toolRow);
-    bodyRoot.append(panel);
-  });
-}
 
 // ---------- Ініціалізація ----------
 
-renderRibbon();
+ribbon.render();
 setTool("select");
 serverSync.load().catch(() => setStatus("Не вдалося завантажити документ із сервера", true));
