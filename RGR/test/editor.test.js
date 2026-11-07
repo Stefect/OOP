@@ -34,6 +34,25 @@ test("Editor save/load round-trip", async () => {
   await rm(dir, { recursive: true, force: true });
 });
 
+test("Editor duplicate command", async () => {
+  const editor = new Editor();
+  await editor.execute("add rect 1 2 3 4");
+  const msg = await editor.execute("duplicate 1");
+  assert.match(msg, /Дубльовано/);
+  const listed = await editor.execute("list");
+  assert.match(listed, /#2/);
+});
+
+test("Editor group and ungroup commands", async () => {
+  const editor = new Editor();
+  await editor.execute("add rect 1 2 3 4");
+  await editor.execute("add rect 5 6 3 4");
+  const msg = await editor.execute("group 1 2");
+  assert.match(msg, /Згруповано/);
+  const unmsg = await editor.execute("ungroup 1");
+  assert.match(unmsg, /розформовано/);
+});
+
 test("Editor export svg", async () => {
   const dir = await mkdtemp(join(tmpdir(), "rgr-"));
   const path = join(dir, "out.svg");
