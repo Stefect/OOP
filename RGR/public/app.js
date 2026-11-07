@@ -194,6 +194,12 @@ $("layerUp").addEventListener("click", () => moveLayer(1));
 $("layerDown").addEventListener("click", () => moveLayer(-1));
 $("deleteBtn").addEventListener("click", removeSelected);
 
+function selectAll() {
+  selectedIds = shapes.map((s) => s.id);
+  selectedId = shapes.length ? shapes[shapes.length - 1].id : null;
+  render();
+}
+
 function removeSelected() {
   if (selectedIds.length === 0 && selectedId === null) return;
   const ids = selectedIds.length ? selectedIds : [selectedId];
@@ -294,6 +300,15 @@ document.addEventListener("keydown", (event) => {
   } else if (mod && key === "u") {
     event.preventDefault();
     ungroupSelected();
+  } else if (mod && key === "a") {
+    event.preventDefault();
+    selectAll();
+  } else if (mod && (event.key === "]" || event.key === "}")) {
+    event.preventDefault();
+    moveLayer(1);
+  } else if (mod && (event.key === "[" || event.key === "{")) {
+    event.preventDefault();
+    moveLayer(-1);
   } else if (!mod && (event.key === "Delete" || event.key === "Backspace")) {
     event.preventDefault();
     removeSelected();
