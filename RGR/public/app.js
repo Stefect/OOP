@@ -58,6 +58,7 @@ let draft = null;       // копія, що змінюється під час �
 let preview = null;     // фігура, яка малюється інструментом
 let selectedId = null;
 let selectedIds = [];
+let groups = {};
 let tool = "select";
 let interaction = null; // поточна дія мишкою
 let history = [];
@@ -74,6 +75,8 @@ const appState = {
   set selectedId(value) { selectedId = value; },
   get selectedIds() { return selectedIds; },
   set selectedIds(value) { selectedIds = value; },
+  get groups() { return groups; },
+  set groups(value) { groups = value; },
   get tool() { return tool; },
   set tool(value) { tool = value; },
   get interaction() { return interaction; },
@@ -212,14 +215,38 @@ function removeSelected() {
 }
 
 function duplicateSelected() {
+  if (selectedIds.length === 0 && selectedId === null) return;
+  const ids = selectedIds.length ? selectedIds : [selectedId];
+  const copies = [];
+  for (const id of ids) {
+    const original = shapes.find((s) => s.id === id);
+    if (!original) continue;
+    const copy = structuredClone(original);
+    copy.id = nextId();
+    interactionController.moveShape(copy, 10, 10);
+    copies.push(copy);
+  }
+  if (copies.length === 0) return;
+  selectedIds = copies.map((c) => c.id);
+  selectedId = copies[copies.length - 1].id;
+  commit([...shapes, ...copies]);
+}
+
+function groupSelected() {
+  if (selectedIds.length < 2) return;
+  const nextId = Object.keys(groups).reduce((m, k) => Math.max(m, Number(k)), 0) + 1;
+  groups[nextId] = [...selectedIds];
+  setStatus(`Згруповано у групу #${nextId}`);
+  commit(shapes);
+}
+
+function ungroupSelected() {
   if (selectedId === null) return;
-  const original = shapes.find((s) => s.id === selectedId);
-  if (!original) return;
-  const copy = structuredClone(original);
-  copy.id = nextId();
-  interactionController.moveShape(copy, 10, 10);
-  selectedId = copy.id;
-  commit([...shapes, copy]);
+  const gid = Object.keys(groups).find((k) => groups[k].includes(selectedId));
+  if (!gid) return;
+  delete groups[gid];
+  setStatus(`Групу #${gid} розформовано`);
+  commit(shapes);
 }
 
 // ---------- Панель інструментів ----------
@@ -273,6 +300,12 @@ document.addEventListener("keydown", (event) => {
   } else if (mod && key === "d") {
     event.preventDefault();
     duplicateSelected();
+  } else if (mod && key === "g") {
+    event.preventDefault();
+    groupSelected();
+  } else if (mod && key === "u") {
+    event.preventDefault();
+    ungroupSelected();
   } else if (!mod && (event.key === "Delete" || event.key === "Backspace")) {
     event.preventDefault();
     removeSelected();
@@ -313,6 +346,7 @@ function newScene() {
   shapes = [];
   selectedId = null;
   selectedIds = [];
+  groups = {};
   historyManager.reset(shapes);
   serverSync.sync();
   render();

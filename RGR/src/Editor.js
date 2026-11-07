@@ -8,6 +8,8 @@ const HELP = [
   "  add line x1 y1 x2 y2            - додати лінію",
   "  move id dx dy                   - перемістити фігуру",
   "  duplicate id                    - дублювати фігуру",
+  "  group id1 id2 ...              - згрупувати фігури",
+  "  ungroup groupId                 - розгрупувати",
   "  delete id                       - видалити фігуру",
   "  list                            - показати всі фігури",
   "  save файл.json                  - зберегти документ",
@@ -27,6 +29,8 @@ export class Editor {
       ["add", (args) => this.#add(args)],
       ["move", (args) => this.#move(args)],
       ["duplicate", (args) => this.#duplicate(args)],
+      ["group", (args) => this.#group(args)],
+      ["ungroup", (args) => this.#ungroup(args)],
       ["delete", (args) => this.#delete(args)],
       ["list", () => this.#list()],
       ["save", (args) => this.#save(args)],
@@ -104,6 +108,17 @@ export class Editor {
   #duplicate([id]) {
     const shape = this.#document.duplicate(this.#parseId(id));
     return `Дубльовано #${id} як #${shape.id}`;
+  }
+
+  #group(args) {
+    const ids = args.map((token) => this.#parseId(token));
+    const groupId = this.#document.group(ids);
+    return `Згруповано у групу #${groupId}`;
+  }
+
+  #ungroup([id]) {
+    this.#document.ungroup(this.#parseId(id));
+    return `Групу #${id} розформовано`;
   }
 
   #list() {

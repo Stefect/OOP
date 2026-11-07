@@ -24,6 +24,14 @@ export class InteractionController {
     return this.snapEnabled ? Math.round(value / 20) * 20 : value;
   }
 
+  groupMembers(id) {
+    const groups = this.state.groups || {};
+    for (const members of Object.values(groups)) {
+      if (members.includes(id)) return [...members];
+    }
+    return [id];
+  }
+
   canvasPoint(event) {
     const rect = this.canvas.getBoundingClientRect();
     return {
@@ -223,7 +231,8 @@ export class InteractionController {
       }
       this.state.selectedId = hit.id;
     } else if (hit) {
-      this.state.selectedIds = [hit.id];
+      const members = this.groupMembers(hit.id);
+      this.state.selectedIds = members.length > 1 ? members : [hit.id];
       this.state.selectedId = hit.id;
     } else {
       this.state.selectedIds = [];
@@ -256,8 +265,10 @@ export class InteractionController {
       const dx = point.x - this.state.interaction.last.x;
       const dy = point.y - this.state.interaction.last.y;
       if (dx === 0 && dy === 0) return;
-      if (this.state.selectedIds.length > 1) {
-        for (const id of this.state.selectedIds) {
+      const group = this.groupMembers(shape.id);
+      const toMove = group.length > 1 ? group : this.state.selectedIds;
+      if (toMove.length > 1) {
+        for (const id of toMove) {
           const s = this.state.draft.find((x) => x.id === id);
           if (s) this.moveShape(s, dx, dy);
         }

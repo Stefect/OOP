@@ -12,7 +12,7 @@ export class ServerSync {
       const response = await fetch("/api/document", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ shapes: this.state.shapes }),
+        body: JSON.stringify({ shapes: this.state.shapes, groups: this.state.groups }),
       });
       if (!response.ok) {
         const data = await response.json();
@@ -26,6 +26,7 @@ export class ServerSync {
     const response = await fetch("/api/document");
     const data = await response.json();
     this.state.shapes = data.shapes;
+    this.state.groups = data.groups ?? {};
     this.state.selectedId = null;
     this.state.selectedIds = [];
     this.historyManager.reset(this.state.shapes);
