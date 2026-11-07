@@ -3,6 +3,7 @@ import { ServerSync } from "./serverSync.js";
 import { Renderer } from "./renderer.js";
 import { InteractionController } from "./interactionController.js";
 import { LayersPanel } from "./layersPanel.js";
+import { PropertiesPanel } from "./propertiesPanel.js";
 
 const CANVAS = { width: 2000, height: 2000 };
 const GRID = 20;
@@ -90,6 +91,7 @@ const interactionController = new InteractionController(appState, renderer, canv
 });
 interactionController.bind();
 const layersPanel = new LayersPanel(appState, { selectShape });
+const propertiesPanel = new PropertiesPanel(appState, { updateSelected });
 
 function setStatus(text, isError = false) {
   const status = $("status");
@@ -134,7 +136,7 @@ function nextId() {
 function render() {
   renderer.renderScene();
   layersPanel.render();
-  renderProps();
+  propertiesPanel.render();
   updateHistoryButtons();
 }
 
@@ -164,67 +166,6 @@ function moveLayer(direction) {
 }
 
 
-function renderProps() {
-  const shape = selectedShape();
-  $("noSelection").hidden = Boolean(shape);
-  $("props").hidden = !shape;
-  if (!shape) return;
-
-  const geometry = $("geometry");
-  geometry.replaceChildren();
-  const grid = document.createElement("div");
-  grid.className = "geo-grid";
-  for (const [field, label] of GEOMETRY_FIELDS[shape.type]) {
-    const wrap = document.createElement("div");
-    const caption = document.createElement("label");
-    caption.textContent = label;
-    const input = document.createElement("input");
-    input.type = "number";
-    input.step = "1";
-    input.value = shape.geometry[field];
-    input.addEventListener("change", () => {
-      let value = Math.round(Number(input.value));
-      if (!Number.isFinite(value)) {
-        renderProps();
-        return;
-      }
-      if (MIN_SIZE_FIELDS.has(field)) value = Math.max(1, value);
-      updateSelected((s) => {
-        s.geometry[field] = value;
-      });
-    });
-    wrap.append(caption, input);
-    grid.append(wrap);
-  }
-  const heading = document.createElement("label");
-  heading.textContent = "Розміри та положення";
-  geometry.append(heading, grid);
-
-  if (shape.type === "text" || shape.type === "label") {
-    const textWrap = document.createElement("div");
-    const textLabel = document.createElement("label");
-    textLabel.textContent = "Текст";
-    const textInput = document.createElement("input");
-    textInput.type = "text";
-    textInput.value = shape.geometry.text || "Текст";
-    textInput.addEventListener("change", () => {
-      updateSelected((s) => {
-        s.geometry.text = textInput.value;
-      });
-    });
-    textWrap.append(textLabel, textInput);
-    geometry.append(textWrap);
-  }
-
-  const isLine = shape.type === "line";
-  $("fillRow").hidden = isLine;
-  $("fillOn").checked = shape.style.fill !== "none";
-  $("fillColor").value = shape.style.fill !== "none" ? shape.style.fill : "#ffffff";
-  $("fillColor").disabled = !$("fillOn").checked;
-  $("strokeColor").value = shape.style.stroke;
-  $("strokeWidth").value = shape.style.strokeWidth;
-  $("strokeWidthValue").textContent = `${shape.style.strokeWidth} px`;
-}
 
 $("fillOn").addEventListener("change", (event) => {
   updateSelected((s) => {
