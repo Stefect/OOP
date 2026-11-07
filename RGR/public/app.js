@@ -179,6 +179,12 @@ function removeSelected() {
   const ids = selectedIds.length ? selectedIds : [selectedId];
   selectedId = null;
   selectedIds = [];
+  for (const id of ids) {
+    for (const key of Object.keys(groups)) {
+      groups[key] = groups[key].filter((x) => x !== id);
+      if (groups[key].length < 2) delete groups[key];
+    }
+  }
   commit(shapes.filter((s) => !ids.includes(s.id)));
 }
 
