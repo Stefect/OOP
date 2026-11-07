@@ -97,6 +97,14 @@ function redo() {
 
 // ---------- Допоміжні функції ----------
 
+function setTool(name) {
+  tool = name;
+  document.querySelectorAll("button.tool").forEach((button) => {
+    button.classList.toggle("active", button.dataset.tool === name);
+  });
+  canvas.classList.toggle("crosshair", name !== "select");
+}
+
 function nextId() {
   return shapes.reduce((max, s) => Math.max(max, s.id), 0) + 1;
 }

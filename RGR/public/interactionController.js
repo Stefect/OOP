@@ -168,7 +168,7 @@ export class InteractionController {
       return { cx: a.x, cy: a.y, rx: Math.abs(b.x - a.x), ry: Math.abs(b.y - a.y) };
     }
     if (type === "arc") {
-      return { cx: a.x, cy: a.y, r: Math.round(Math.hypot(b.x - a.x, b.y - a.y)), start: 0, end: 6.28 };
+      return { cx: a.x, cy: a.y, r: Math.round(Math.hypot(b.x - a.x, b.y - a.y)), start: 0, end: Math.PI * 1.5 };
     }
     if (BOX_TYPES.has(type)) {
       return {

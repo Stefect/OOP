@@ -3,7 +3,6 @@ const RIBBON_TABS = [
   { id: "basic", label: "2D фігури" },
   { id: "lines", label: "Лінії" },
   { id: "solid", label: "3D" },
-  { id: "flow", label: "Схеми" },
   { id: "text", label: "Текст" },
 ];
 
@@ -12,7 +11,6 @@ const RIBBON_TOOLS = {
   basic: ["rectangle", "square", "circle", "ellipse", "triangle", "rhombus", "parallelogram", "star", "roundedrect", "polygon", "arc"],
   lines: ["line", "arrow", "polyline", "bezier"],
   solid: ["cube", "cuboid", "cylinder", "cone", "pyramid", "sphere"],
-  flow: ["flowprocess", "flowdecision", "flowterminator", "callout", "speechbubble"],
   text: ["text"],
 };
 
