@@ -7,6 +7,7 @@ const HELP = [
   "  add circle cx cy r              - додати коло",
   "  add line x1 y1 x2 y2            - додати лінію",
   "  move id dx dy                   - перемістити фігуру",
+  "  duplicate id                    - дублювати фігуру",
   "  delete id                       - видалити фігуру",
   "  list                            - показати всі фігури",
   "  save файл.json                  - зберегти документ",
@@ -25,6 +26,7 @@ export class Editor {
     this.#commands = new Map([
       ["add", (args) => this.#add(args)],
       ["move", (args) => this.#move(args)],
+      ["duplicate", (args) => this.#duplicate(args)],
       ["delete", (args) => this.#delete(args)],
       ["list", () => this.#list()],
       ["save", (args) => this.#save(args)],
@@ -97,6 +99,11 @@ export class Editor {
   #delete([id]) {
     this.#document.remove(this.#parseId(id));
     return `Фігуру #${id} видалено`;
+  }
+
+  #duplicate([id]) {
+    const shape = this.#document.duplicate(this.#parseId(id));
+    return `Дубльовано #${id} як #${shape.id}`;
   }
 
   #list() {

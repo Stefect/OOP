@@ -207,6 +207,17 @@ function removeSelected() {
   commit(shapes.filter((s) => s.id !== id));
 }
 
+function duplicateSelected() {
+  if (selectedId === null) return;
+  const original = shapes.find((s) => s.id === selectedId);
+  if (!original) return;
+  const copy = structuredClone(original);
+  copy.id = nextId();
+  interactionController.moveShape(copy, 10, 10);
+  selectedId = copy.id;
+  commit([...shapes, copy]);
+}
+
 // ---------- Панель інструментів ----------
 
 document.querySelectorAll("button.tool").forEach((button) => {
@@ -255,6 +266,9 @@ document.addEventListener("keydown", (event) => {
   } else if (mod && key === "y") {
     event.preventDefault();
     redo();
+  } else if (mod && key === "d") {
+    event.preventDefault();
+    duplicateSelected();
   } else if (!mod && (event.key === "Delete" || event.key === "Backspace")) {
     event.preventDefault();
     removeSelected();

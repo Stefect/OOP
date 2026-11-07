@@ -28,6 +28,14 @@ export class Document {
     this.get(id).move(dx, dy);
   }
 
+  duplicate(id, dx = 10, dy = 10) {
+    const original = this.get(id);
+    const copy = shapeFactory.restore({ ...original.toJSON(), id: this.#nextId });
+    copy.move(dx, dy);
+    this.#insert(copy);
+    return copy;
+  }
+
   list() {
     return Object.freeze([...this.#shapes.values()]);
   }
