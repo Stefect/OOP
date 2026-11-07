@@ -2,6 +2,7 @@ import { History } from "./history.js";
 import { ServerSync } from "./serverSync.js";
 import { Renderer } from "./renderer.js";
 import { InteractionController } from "./interactionController.js";
+import { LayersPanel } from "./layersPanel.js";
 
 const CANVAS = { width: 2000, height: 2000 };
 const GRID = 20;
@@ -88,6 +89,7 @@ const interactionController = new InteractionController(appState, renderer, canv
   nextId: () => nextId(),
 });
 interactionController.bind();
+const layersPanel = new LayersPanel(appState, { selectShape });
 
 function setStatus(text, isError = false) {
   const status = $("status");
@@ -129,6 +131,13 @@ function nextId() {
   return shapes.reduce((max, s) => Math.max(max, s.id), 0) + 1;
 }
 
+function render() {
+  renderer.renderScene();
+  layersPanel.render();
+  renderProps();
+  updateHistoryButtons();
+}
+
 
 // ---------- Редагування вибраної фігури ----------
 
@@ -154,32 +163,6 @@ function moveLayer(direction) {
   commit(next);
 }
 
-function renderLayers() {
-  const list = $("layers");
-  list.replaceChildren();
-  $("emptyHint").hidden = shapes.length > 0;
-
-  for (const shape of [...shapes].reverse()) {
-    const item = document.createElement("li");
-    item.classList.toggle("selected", shape.id === selectedId);
-
-    const glyph = document.createElement("span");
-    glyph.className = "glyph";
-    glyph.textContent = TYPE_GLYPHS[shape.type];
-
-    const name = document.createElement("span");
-    name.textContent = `${TYPE_LABELS[shape.type]} ${shape.id}`;
-
-    const swatch = document.createElement("span");
-    swatch.className = "swatch";
-    swatch.style.background = shape.style.fill !== "none" ? shape.style.fill : "transparent";
-    swatch.style.borderColor = shape.style.stroke;
-
-    item.append(glyph, name, swatch);
-    item.addEventListener("click", () => selectShape(shape.id));
-    list.append(item);
-  }
-}
 
 function renderProps() {
   const shape = selectedShape();
