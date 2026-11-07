@@ -6,10 +6,6 @@ import { LayersPanel } from "./layersPanel.js";
 import { PropertiesPanel } from "./propertiesPanel.js";
 
 const CANVAS = { width: 2000, height: 2000 };
-const GRID = 20;
-const HANDLE = 8;
-const HIT = 6;
-const MAX_HISTORY = 100;
 
 const BOX_TYPES = new Set(["rectangle","square","rhombus","diamond","cube","cylinder","triangle","roundedrect","roundedrectangle","star","callout","speechbubble","flowdecision","flowprocess","flowterminator","cuboid","pyramid","cone","sphere","parallelogram","text","label","polygon","polyline","bezier","arrowbox"]);
 const TYPE_LABELS = {
@@ -126,14 +122,6 @@ function redo() {
 }
 
 // ---------- Допоміжні функції ----------
-
-function current() {
-  return draft ?? shapes;
-}
-
-function selectedShape() {
-  return current().find((s) => s.id === selectedId) ?? null;
-}
 
 function nextId() {
   return shapes.reduce((max, s) => Math.max(max, s.id), 0) + 1;
@@ -434,30 +422,6 @@ const RIBBON_TOOLS = {
   flow: ["flowprocess", "flowdecision", "flowterminator", "callout", "speechbubble"],
   text: ["text"],
 };
-
-function iconForTool(type) {
-  const c = document.createElement("canvas");
-  c.width = 28;
-  c.height = 28;
-  const cx = c.getContext("2d");
-  cx.scale(1, 1);
-  const g = type === "line" || type === "arrow" || type === "polyline" || type === "bezier"
-    ? { x1: 4, y1: 24, x2: 24, y2: 4 }
-    : { x: 4, y: 4, width: 20, height: 20, cx: 14, cy: 14, r: 8, rx: 10, ry: 8, start: 0, end: 5 };
-  cx.lineWidth = 2;
-  cx.strokeStyle = "#1f2430";
-  cx.fillStyle = "#cfe2ff";
-  // reuse drawVectorShape by temporarily swapping ctx? Instead draw simple:
-  cx.beginPath();
-  if (type === "select") {
-    cx.moveTo(6, 6); cx.lineTo(22, 14); cx.lineTo(14, 16); cx.lineTo(12, 22); cx.closePath(); cx.stroke();
-  } else {
-    // generic preview
-    cx.rect(4, 4, 20, 20);
-    cx.stroke();
-  }
-  return c.toDataURL();
-}
 
 function renderRibbon() {
   const tabsRoot = $("ribbonTabs");
