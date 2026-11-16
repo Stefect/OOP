@@ -121,13 +121,7 @@ export class InteractionController {
 
   moveShape(shape, dx, dy) {
     const g = shape.geometry;
-    if (shape.type === "rectangle") {
-      g.x += dx;
-      g.y += dy;
-    } else if (shape.type === "circle") {
-      g.cx += dx;
-      g.cy += dy;
-    } else if (shape.type === "ellipse") {
+    if (shape.type === "ellipse") {
       g.cx += dx;
       g.cy += dy;
     } else if (BOX_TYPES.has(shape.type)) {

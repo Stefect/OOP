@@ -1,7 +1,7 @@
-const BOX_TYPES = new Set(["rectangle","square","rhombus","cube","cylinder","triangle","roundedrect","star","pyramid","cone","sphere","parallelogram","text","polygon","polyline","bezier"]);
+const BOX_TYPES = new Set(["square","rhombus","cube","cylinder","triangle","roundedrect","star","pyramid","cone","sphere","parallelogram","text","polygon","polyline","bezier"]);
 
 const GEOMETRY_FIELDS = {
-  circle: [["cx", "X центру"], ["cy", "Y центру"], ["r", "Радіус"]],
+
   ellipse: [["cx", "X центру"], ["cy", "Y центру"], ["rx", "Радіус X"], ["ry", "Радіус Y"]],
   line: [["x1", "X1"], ["y1", "Y1"], ["x2", "X2"], ["y2", "Y2"]],
   arrow: [["x1", "X1"], ["y1", "Y1"], ["x2", "X2"], ["y2", "Y2"]],

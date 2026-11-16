@@ -1,12 +1,12 @@
 const TYPE_LABELS = {
-  rectangle: "Прямокутник", square: "Квадрат", circle: "Коло", ellipse: "Еліпс", rhombus: "Ромб", cube: "Куб", cylinder: "Циліндр",
+  square: "Квадрат", ellipse: "Еліпс", rhombus: "Ромб", cube: "Куб", cylinder: "Циліндр",
   triangle: "Трикутник", roundedrect: "Скруглений прямокутник", star: "Зірка",
   pyramid: "Піраміда", cone: "Конус", sphere: "Сфера",
   parallelogram: "Паралелограм", text: "Текст", polygon: "Багатокутник", polyline: "Ломана", bezier: "Крива Безьє", arc: "Дуга/Сектор", line: "Лінія", arrow: "Стрілка",
   group: "Група"
 };
 const TYPE_GLYPHS = {
-  select: "↖", rectangle: "▭", square: "□", circle: "○", ellipse: "◯", rhombus: "◇", cube: "▣", cylinder: "⏢",
+  select: "↖", square: "□", ellipse: "◯", rhombus: "◇", cube: "▣", cylinder: "⏢",
   triangle: "△", roundedrect: "▢", star: "★",
   pyramid: "△", cone: "△", sphere: "●", parallelogram: "▱", text: "T",
   polygon: "⬠", polyline: "⤼", bezier: "∿", arc: "◡", line: "╱", arrow: "➔", group: "⊞",

@@ -2,7 +2,7 @@ const CANVAS = { width: 2000, height: 2000 };
 const GRID = 20;
 const HANDLE = 8;
 const HIT = 6;
-const BOX_TYPES = new Set(["rectangle","square","rhombus","cube","cylinder","triangle","roundedrect","star","pyramid","cone","sphere","parallelogram","text","polygon","polyline","bezier"]);
+const BOX_TYPES = new Set(["square","rhombus","cube","cylinder","triangle","roundedrect","star","pyramid","cone","sphere","parallelogram","text","polygon","polyline","bezier"]);
 
 export class Renderer {
   constructor(state, canvas, ctx) {
@@ -205,12 +205,12 @@ export class Renderer {
     const cx = (typeof g.cx === "number") ? g.cx : x + w / 2;
     const cy = (typeof g.cy === "number") ? g.cy : y + h / 2;
     ctx.beginPath();
-    if (type === "rectangle" || type === "square" || type === "flowprocess" || type === "cuboid") {
+    if (type === "square" || type === "flowprocess" || type === "cuboid") {
       ctx.rect(x, y, w, h);
     } else if (type === "roundedrect" || type === "roundedrectangle" || type === "flowterminator" || type === "callout" || type === "speechbubble") {
       const r = Math.min(w, h) / 5;
       if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h);
-    } else if (type === "circle" || type === "sphere") {
+    } else if (type === "sphere") {
       ctx.arc(cx, cy, (typeof g.r === "number" ? g.r : Math.min(w, h) / 2), 0, Math.PI * 2);
     } else if (type === "ellipse") {
       ctx.ellipse(cx, cy, Math.max(1, g.rx || w / 2), Math.max(1, g.ry || h / 2), 0, 0, Math.PI * 2);
@@ -338,12 +338,6 @@ export class Renderer {
 
   boundsOf(shape) {
     const g = shape.geometry;
-    if (shape.type === "rectangle") {
-      return { x: g.x, y: g.y, width: g.width, height: g.height };
-    }
-    if (shape.type === "circle") {
-      return { x: g.cx - g.r, y: g.cy - g.r, width: g.r * 2, height: g.r * 2 };
-    }
     if (shape.type === "ellipse") {
       return { x: g.cx - g.rx, y: g.cy - g.ry, width: g.rx * 2, height: g.ry * 2 };
     }
@@ -360,18 +354,6 @@ export class Renderer {
 
   handlesOf(shape) {
     const g = shape.geometry;
-    if (shape.type === "rectangle") {
-      const { x, y, width: w, height: h } = g;
-      return [
-        { name: "nw", x, y }, { name: "n", x: x + w / 2, y },
-        { name: "ne", x: x + w, y }, { name: "e", x: x + w, y: y + h / 2 },
-        { name: "se", x: x + w, y: y + h }, { name: "s", x: x + w / 2, y: y + h },
-        { name: "sw", x, y: y + h }, { name: "w", x, y: y + h / 2 },
-      ];
-    }
-    if (shape.type === "circle") {
-      return [{ name: "r", x: g.cx + g.r, y: g.cy }];
-    }
     if (shape.type === "ellipse") {
       return [
         { name: "e", x: g.cx + g.rx, y: g.cy },
