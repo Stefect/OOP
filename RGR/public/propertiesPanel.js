@@ -56,7 +56,7 @@ export class PropertiesPanel {
     heading.textContent = "Розміри та положення";
     geometry.append(heading, grid);
 
-    if (selected.type === "text" || selected.type === "label") {
+    if (selected.type === "text") {
       const textWrap = document.createElement("div");
       const textLabel = document.createElement("label");
       textLabel.textContent = "Текст";
@@ -72,7 +72,7 @@ export class PropertiesPanel {
       geometry.append(textWrap);
     }
 
-    const isLine = selected.type === "line";
+    const isLine = selected.type === "line" || selected.type === "arrow";
     document.getElementById("fillRow").hidden = isLine;
     document.getElementById("fillOn").checked = selected.style.fill !== "none";
     document.getElementById("fillColor").value = selected.style.fill !== "none" ? selected.style.fill : "#ffffff";
