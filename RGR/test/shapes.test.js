@@ -59,3 +59,8 @@ test("GenericShape renders g svg", () => {
   const shape = shapeFactory.restore(data);
   assert.match(shape.toSvg(), /^<g data-type="widget" \/>/);
 });
+
+test("ArcShape renders path svg", () => {
+  const shape = shapeFactory.create("arc", 3, [10, 20, 5, 0, Math.PI]);
+  assert.match(shape.toSvg(), /^<path d="M /);
+});

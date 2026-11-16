@@ -113,6 +113,7 @@ export class InteractionController {
     }
     if (this.snapEnabled) {
       for (const key of Object.keys(g)) {
+        if ((key === "start" || key === "end") ) continue;
         if (typeof g[key] === "number") g[key] = this.snap(g[key]);
       }
     }
@@ -143,6 +144,7 @@ export class InteractionController {
     }
     if (this.snapEnabled) {
       for (const key of Object.keys(g)) {
+        if (key === "start" || key === "end") continue;
         if (typeof g[key] === "number") g[key] = this.snap(g[key]);
       }
     }

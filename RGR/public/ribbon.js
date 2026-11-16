@@ -7,10 +7,10 @@ const RIBBON_TABS = [
 ];
 
 const RIBBON_TOOLS = {
-  main: ["select", "rectangle", "circle", "ellipse", "text"],
-  basic: ["rectangle", "square", "circle", "ellipse", "triangle", "rhombus", "parallelogram", "star", "roundedrect", "polygon", "arc"],
+  main: ["select", "square", "ellipse", "text"],
+  basic: ["square", "ellipse", "triangle", "rhombus", "parallelogram", "star", "roundedrect", "polygon", "arc"],
   lines: ["line", "arrow", "polyline", "bezier"],
-  solid: ["cube", "cuboid", "cylinder", "cone", "pyramid", "sphere"],
+  solid: ["cube", "cylinder", "cone", "pyramid", "sphere"],
   text: ["text"],
 };
 
@@ -23,10 +23,10 @@ const TYPE_LABELS = {
 };
 
 const TYPE_GLYPHS = {
-  rectangle: "R", square: "S", circle: "O", ellipse: "O", rhombus: "D", diamond: "D", cube: "C", cylinder: "Y",
-  triangle: "T", roundedrect: "U", star: "*", callout: "!", speechbubble: "!", flowdecision: "?", flowprocess: "P",
-  flowterminator: "O", cuboid: "B", pyramid: "A", cone: "V", sphere: "●", parallelogram: "P", text: "T",
-  polygon: "G", polyline: "/", bezier: "~", arc: ")", line: "/", arrow: "->", group: "G",
+  select: "↖", rectangle: "▭", square: "□", circle: "○", ellipse: "◯", rhombus: "◇", diamond: "◇", cube: "▣", cylinder: "⏢",
+  triangle: "△", roundedrect: "▢", star: "★", callout: "!", speechbubble: "!", flowdecision: "?", flowprocess: "P",
+  flowterminator: "O", cuboid: "▣", pyramid: "△", cone: "△", sphere: "●", parallelogram: "▱", text: "T",
+  polygon: "⬠", polyline: "⤼", bezier: "∿", arc: "◡", line: "╱", arrow: "➔", group: "⊞",
 };
 
 export class Ribbon {

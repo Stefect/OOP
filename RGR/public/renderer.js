@@ -30,9 +30,15 @@ export class Renderer {
     if (this.state.preview) {
       this.drawShape(this.state.preview);
     }
-    const selected = this.state.preview ? null : this.selectedShape();
-    if (selected) {
-      this.drawSelection(selected);
+    if (!this.state.preview) {
+      const current = this.current();
+      const ids = (this.state.selectedIds && this.state.selectedIds.length)
+        ? this.state.selectedIds
+        : (this.state.selectedId != null ? [this.state.selectedId] : []);
+      for (const id of ids) {
+        const shape = current.find((s) => s.id === id);
+        if (shape) this.drawSelection(shape);
+      }
     }
   }
 

@@ -6,6 +6,8 @@ export class EditorState {
     this.draft = null;
     this.preview = null;
     this.selectedId = null;
+    this.selectedIds = [];
+    this.groups = {};
     this.tool = "select";
     this.interaction = null;
     this.history = [];
@@ -16,8 +18,8 @@ export class EditorState {
     return this.draft ?? this.shapes;
   }
 
-  resetHistory(initial = []) {
-    this.history = [structuredClone(initial)];
+  resetHistory(initial = [], groups = {}) {
+    this.history = [{ shapes: structuredClone(initial), groups: structuredClone(groups) }];
     this.historyIndex = 0;
   }
 }

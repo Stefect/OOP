@@ -53,6 +53,18 @@ test("Editor group and ungroup commands", async () => {
   assert.match(unmsg, /розформовано/);
 });
 
+test("Editor export svg with arc", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "rgr-"));
+  const path = join(dir, "arc.svg");
+  const editor = new Editor();
+  await editor.execute("add arc 10 20 5 0 3");
+  await editor.execute(`export ${path}`);
+  const { readFile } = await import("node:fs/promises");
+  const svg = await readFile(path, "utf8");
+  assert.match(svg, /<path d="M /);
+  await rm(dir, { recursive: true, force: true });
+});
+
 test("Editor export svg", async () => {
   const dir = await mkdtemp(join(tmpdir(), "rgr-"));
   const path = join(dir, "out.svg");

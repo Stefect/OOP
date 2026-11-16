@@ -2,6 +2,7 @@ import { TypedShape } from "./TypedShape.js";
 
 export class BoxShape extends TypedShape {
   static tag = "rect";
+  static fields = ["x", "y", "width", "height"];
   static nonNegativeFields = ["width", "height"];
 
   constructor(id, geometry, style = {}, type = "box") {

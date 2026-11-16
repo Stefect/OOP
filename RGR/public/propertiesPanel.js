@@ -19,8 +19,6 @@ export class PropertiesPanel {
   }
 
   render() {
-    const shape = this.state.shapes.find((s) => s.id === this.state.selectedId) ?? this.state.draft?.find((s) => s.id === this.state.selectedId) ?? null;
-    // selectedShape() logic: current() ?? draft ?? shapes
     const current = this.state.draft ?? this.state.shapes;
     const selected = current.find((s) => s.id === this.state.selectedId) ?? null;
 

@@ -76,6 +76,12 @@ test("Document toJSON/fromJSON preserves groups", () => {
   assert.equal(restored.groupOf(1), restored.groupOf(2));
 });
 
+test("Document toSvg exports arc as path", () => {
+  const doc = new Document();
+  doc.add("arc", [10, 20, 5, 0, Math.PI]);
+  assert.match(doc.toSvg(), /<path d="M /);
+});
+
 test("Document rejects duplicate id on insert via fromJSON gracefully", () => {
   // duplicate ids in data should not crash; #insert guards
   const data = { shapes: [

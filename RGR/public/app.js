@@ -1,4 +1,5 @@
 import { History } from "./history.js";
+import { EditorState } from "./state.js";
 import { ServerSync } from "./serverSync.js";
 import { Renderer } from "./renderer.js";
 import { InteractionController } from "./interactionController.js";
@@ -22,39 +23,7 @@ ctx.imageSmoothingQuality = "high";
 
 const clone = (value) => structuredClone(value);
 
-let shapes = [];        // зафіксований стан документа
-let draft = null;       // копія, що змінюється під час перетягування
-let preview = null;     // фігура, яка малюється інструментом
-let selectedId = null;
-let selectedIds = [];
-let groups = {};
-let tool = "select";
-let interaction = null; // поточна дія мишкою
-let history = [];
-let historyIndex = -1;
-
-const appState = {
-  get shapes() { return shapes; },
-  set shapes(value) { shapes = value; },
-  get draft() { return draft; },
-  set draft(value) { draft = value; },
-  get preview() { return preview; },
-  set preview(value) { preview = value; },
-  get selectedId() { return selectedId; },
-  set selectedId(value) { selectedId = value; },
-  get selectedIds() { return selectedIds; },
-  set selectedIds(value) { selectedIds = value; },
-  get groups() { return groups; },
-  set groups(value) { groups = value; },
-  get tool() { return tool; },
-  set tool(value) { tool = value; },
-  get interaction() { return interaction; },
-  set interaction(value) { interaction = value; },
-  get history() { return history; },
-  set history(value) { history = value; },
-  get historyIndex() { return historyIndex; },
-  set historyIndex(value) { historyIndex = value; },
-};
+const appState = new EditorState();
 const historyManager = new History(appState);
 const serverSync = new ServerSync(appState, historyManager, setStatus, render);
 const renderer = new Renderer(appState, canvas, ctx);
@@ -98,7 +67,7 @@ function redo() {
 // ---------- Допоміжні функції ----------
 
 function setTool(name) {
-  tool = name;
+  appState.tool = name;
   document.querySelectorAll("button.tool").forEach((button) => {
     button.classList.toggle("active", button.dataset.tool === name);
   });
@@ -106,7 +75,7 @@ function setTool(name) {
 }
 
 function nextId() {
-  return shapes.reduce((max, s) => Math.max(max, s.id), 0) + 1;
+  return appState.shapes.reduce((max, s) => Math.max(max, s.id), 0) + 1;
 }
 
 function render() {
@@ -120,23 +89,23 @@ function render() {
 // ---------- Редагування вибраної фігури ----------
 
 function updateSelected(mutate) {
-  const next = clone(shapes);
-  const target = next.find((s) => s.id === selectedId);
+  const next = clone(appState.shapes);
+  const target = next.find((s) => s.id === appState.selectedId);
   if (!target) return;
   mutate(target);
   commit(next);
 }
 
 function selectShape(id) {
-  selectedId = id;
+  appState.selectedId = id;
   render();
 }
 
 function moveLayer(direction) {
-  const index = shapes.findIndex((s) => s.id === selectedId);
+  const index = appState.shapes.findIndex((s) => s.id === appState.selectedId);
   const target = index + direction;
-  if (index < 0 || target < 0 || target >= shapes.length) return;
-  const next = clone(shapes);
+  if (index < 0 || target < 0 || target >= appState.shapes.length) return;
+  const next = clone(appState.shapes);
   [next[index], next[target]] = [next[target], next[index]];
   commit(next);
 }
@@ -177,31 +146,31 @@ $("layerDown").addEventListener("click", () => moveLayer(-1));
 $("deleteBtn").addEventListener("click", removeSelected);
 
 function selectAll() {
-  selectedIds = shapes.map((s) => s.id);
-  selectedId = shapes.length ? shapes[shapes.length - 1].id : null;
+  appState.selectedIds = appState.shapes.map((s) => s.id);
+  appState.selectedId = appState.shapes.length ? appState.shapes[appState.shapes.length - 1].id : null;
   render();
 }
 
 function removeSelected() {
-  if (selectedIds.length === 0 && selectedId === null) return;
-  const ids = selectedIds.length ? selectedIds : [selectedId];
-  selectedId = null;
-  selectedIds = [];
+  if (appState.selectedIds.length === 0 && appState.selectedId === null) return;
+  const ids = appState.selectedIds.length ? appState.selectedIds : [appState.selectedId];
+  appState.selectedId = null;
+  appState.selectedIds = [];
   for (const id of ids) {
-    for (const key of Object.keys(groups)) {
-      groups[key] = groups[key].filter((x) => x !== id);
-      if (groups[key].length < 2) delete groups[key];
+    for (const key of Object.keys(appState.groups)) {
+      appState.groups[key] = appState.groups[key].filter((x) => x !== id);
+      if (appState.groups[key].length < 2) delete appState.groups[key];
     }
   }
-  commit(shapes.filter((s) => !ids.includes(s.id)));
+  commit(appState.shapes.filter((s) => !ids.includes(s.id)));
 }
 
 function duplicateSelected() {
-  if (selectedIds.length === 0 && selectedId === null) return;
-  const ids = selectedIds.length ? selectedIds : [selectedId];
+  if (appState.selectedIds.length === 0 && appState.selectedId === null) return;
+  const ids = appState.selectedIds.length ? appState.selectedIds : [appState.selectedId];
   const copies = [];
   for (const id of ids) {
-    const original = shapes.find((s) => s.id === id);
+    const original = appState.shapes.find((s) => s.id === id);
     if (!original) continue;
     const copy = structuredClone(original);
     copy.id = nextId();
@@ -209,26 +178,26 @@ function duplicateSelected() {
     copies.push(copy);
   }
   if (copies.length === 0) return;
-  selectedIds = copies.map((c) => c.id);
-  selectedId = copies[copies.length - 1].id;
-  commit([...shapes, ...copies]);
+  appState.selectedIds = copies.map((c) => c.id);
+  appState.selectedId = copies[copies.length - 1].id;
+  commit([...appState.shapes, ...copies]);
 }
 
 function groupSelected() {
-  if (selectedIds.length < 2) return;
-  const nextId = Object.keys(groups).reduce((m, k) => Math.max(m, Number(k)), 0) + 1;
-  groups[nextId] = [...selectedIds];
+  if (appState.selectedIds.length < 2) return;
+  const nextId = Object.keys(appState.groups).reduce((m, k) => Math.max(m, Number(k)), 0) + 1;
+  appState.groups[nextId] = [...appState.selectedIds];
   setStatus(`Згруповано у групу #${nextId}`);
-  commit(shapes);
+  commit(appState.shapes);
 }
 
 function ungroupSelected() {
-  if (selectedId === null) return;
-  const gid = Object.keys(groups).find((k) => groups[k].includes(selectedId));
+  if (appState.selectedId === null) return;
+  const gid = Object.keys(appState.groups).find((k) => appState.groups[k].includes(appState.selectedId));
   if (!gid) return;
-  delete groups[gid];
+  delete appState.groups[gid];
   setStatus(`Групу #${gid} розформовано`);
-  commit(shapes);
+  commit(appState.shapes);
 }
 
 // ---------- Панель інструментів ----------
@@ -301,8 +270,8 @@ document.addEventListener("keydown", (event) => {
     event.preventDefault();
     removeSelected();
   } else if (event.key === "Escape") {
-    selectedId = null;
-    selectedIds = [];
+    appState.selectedId = null;
+    appState.selectedIds = [];
     setTool("select");
     render();
   } else if (!mod && key === "g") {
@@ -334,11 +303,11 @@ window.addEventListener("click", closeMenus);
 
 function newScene() {
   closeMenus();
-  shapes = [];
-  selectedId = null;
-  selectedIds = [];
-  groups = {};
-  historyManager.reset(shapes);
+  appState.shapes = [];
+  appState.selectedId = null;
+  appState.selectedIds = [];
+  appState.groups = {};
+  historyManager.reset(appState.shapes);
   serverSync.sync();
   render();
   setStatus("Створено нову сцену");
@@ -367,7 +336,7 @@ async function openSelectedFile(file) {
 
 function saveAsDownload() {
   closeMenus();
-  const data = { shapes, groups };
+  const data = { shapes: appState.shapes, groups: appState.groups };
   const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
