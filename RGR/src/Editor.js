@@ -3,8 +3,8 @@ import { documentStorage } from "./Storage.js";
 
 const HELP = [
   "Команди:",
-  "  add rect x y width height       - додати прямокутник",
-  "  add circle cx cy r              - додати коло",
+  "  add square x y width height     - додати квадрат",
+
   "  add line x1 y1 x2 y2            - додати лінію",
   "  move id dx dy                   - перемістити фігуру",
   "  duplicate id                    - дублювати фігуру",
@@ -86,7 +86,7 @@ export class Editor {
 
   #add([type, ...values]) {
     if (!type) {
-      throw new Error("Вкажіть тип фігури: rect, circle або line");
+      throw new Error("Вкажіть тип фігури: square, ellipse або line");
     }
     const shape = this.#document.add(
       type.toLowerCase(),

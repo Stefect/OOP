@@ -91,7 +91,7 @@ export class Renderer {
     const dark = this.shadeColor(base, 0.7);
     const darker = this.shadeColor(base, 0.5);
 
-    if (type === "cube" || type === "cuboid") {
+    if (type === "cube") {
       const d = Math.min(w, h) * 0.28;
       ctx.beginPath();
       ctx.moveTo(x, y + d);
@@ -205,9 +205,9 @@ export class Renderer {
     const cx = (typeof g.cx === "number") ? g.cx : x + w / 2;
     const cy = (typeof g.cy === "number") ? g.cy : y + h / 2;
     ctx.beginPath();
-    if (type === "square" || type === "flowprocess" || type === "cuboid") {
+    if (type === "square") {
       ctx.rect(x, y, w, h);
-    } else if (type === "roundedrect" || type === "roundedrectangle" || type === "flowterminator" || type === "callout" || type === "speechbubble") {
+    } else if (type === "roundedrect") {
       const r = Math.min(w, h) / 5;
       if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h);
     } else if (type === "sphere") {
@@ -219,7 +219,7 @@ export class Renderer {
       ctx.lineTo(x + w, y + h);
       ctx.lineTo(x, y + h);
       ctx.closePath();
-    } else if (type === "rhombus" || type === "diamond" || type === "flowdecision") {
+    } else if (type === "rhombus") {
       ctx.moveTo(cx, y);
       ctx.lineTo(x + w, cy);
       ctx.lineTo(cx, y + h);
@@ -282,7 +282,7 @@ export class Renderer {
         ctx.lineTo(cx, cy);
         ctx.closePath();
       }
-    } else if (type === "text" || type === "label") {
+    } else if (type === "text") {
       ctx.rect(x, y, w, h);
     } else {
       ctx.rect(x, y, w, h);
@@ -296,7 +296,7 @@ export class Renderer {
     ctx.lineWidth = shape.style.strokeWidth;
     ctx.strokeStyle = shape.style.stroke;
     ctx.fillStyle = shape.style.fill;
-    const solid = new Set(["cube", "cuboid", "cylinder", "cone", "pyramid", "sphere"]);
+    const solid = new Set(["cube", "cylinder", "cone", "pyramid", "sphere"]);
     if (solid.has(shape.type)) {
       this.drawSolidShape(shape.type, g, shape.style);
       ctx.restore();
@@ -308,7 +308,7 @@ export class Renderer {
       ctx.fill();
     }
     ctx.stroke();
-    if (shape.type === "text" || shape.type === "label") {
+    if (shape.type === "text") {
       ctx.fillStyle = shape.style.stroke;
       ctx.font = "16px sans-serif";
       ctx.fillText(g.text || "Текст", g.x + 6, g.y + 20);

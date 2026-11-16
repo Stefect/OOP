@@ -1,7 +1,7 @@
 const HANDLE = 8;
 const HIT = 6;
 const DEFAULT_STYLE = { stroke: "#2b5797", fill: "#cfe2ff", strokeWidth: 2 };
-const BOX_TYPES = new Set(["rectangle","square","rhombus","cube","cylinder","triangle","roundedrect","star","pyramid","cone","sphere","parallelogram","text","polygon","polyline","bezier"]);
+const BOX_TYPES = new Set(["square","rhombus","cube","cylinder","triangle","roundedrect","star","pyramid","cone","sphere","parallelogram","text","polygon","polyline","bezier"]);
 
 export class InteractionController {
   constructor(state, renderer, canvas, callbacks) {
@@ -51,12 +51,6 @@ export class InteractionController {
 
   hitShape(shape, x, y) {
     const g = shape.geometry;
-    if (shape.type === "rectangle") {
-      return x >= g.x && x <= g.x + g.width && y >= g.y && y <= g.y + g.height;
-    }
-    if (shape.type === "circle") {
-      return Math.hypot(x - g.cx, y - g.cy) <= g.r;
-    }
     if (shape.type === "ellipse") {
       const rx = Math.max(1, g.rx);
       const ry = Math.max(1, g.ry);
@@ -79,19 +73,7 @@ export class InteractionController {
 
   resizeShape(shape, handle, x, y) {
     const g = shape.geometry;
-    if (shape.type === "rectangle") {
-      let left = g.x;
-      let right = g.x + g.width;
-      let top = g.y;
-      let bottom = g.y + g.height;
-      if (handle.includes("w")) left = Math.min(x, right - 1);
-      if (handle.includes("e")) right = Math.max(x, left + 1);
-      if (handle.includes("n")) top = Math.min(y, bottom - 1);
-      if (handle.includes("s")) bottom = Math.max(y, top + 1);
-      Object.assign(g, { x: left, y: top, width: right - left, height: bottom - top });
-    } else if (shape.type === "circle") {
-      g.r = Math.max(1, Math.round(Math.hypot(x - g.cx, y - g.cy)));
-    } else if (shape.type === "ellipse") {
+    if (shape.type === "ellipse") {
       if (handle === "e" || handle === "w") g.rx = Math.max(1, Math.abs(x - g.cx));
       if (handle === "n" || handle === "s") g.ry = Math.max(1, Math.abs(y - g.cy));
     } else if (BOX_TYPES.has(shape.type)) {
@@ -149,17 +131,6 @@ export class InteractionController {
       a = { x: this.snap(a.x), y: this.snap(a.y) };
       b = { x: this.snap(b.x), y: this.snap(b.y) };
     }
-    if (type === "rectangle") {
-      return {
-        x: Math.min(a.x, b.x),
-        y: Math.min(a.y, b.y),
-        width: Math.abs(b.x - a.x),
-        height: Math.abs(b.y - a.y),
-      };
-    }
-    if (type === "circle") {
-      return { cx: a.x, cy: a.y, r: Math.round(Math.hypot(b.x - a.x, b.y - a.y)) };
-    }
     if (type === "ellipse") {
       return { cx: a.x, cy: a.y, rx: Math.abs(b.x - a.x), ry: Math.abs(b.y - a.y) };
     }
@@ -178,9 +149,7 @@ export class InteractionController {
   }
 
   isLargeEnough(type, g) {
-    if (type === "rectangle") return g.width >= 2 && g.height >= 2;
-    if (type === "circle") return g.r >= 2;
-    if (type === "ellipse") return g.rx >= 2 && g.ry >= 2;
+            if (type === "ellipse") return g.rx >= 2 && g.ry >= 2;
     if (type === "arc") return g.r >= 2;
     if (BOX_TYPES.has(type)) return g.width >= 2 && g.height >= 2;
     return Math.hypot(g.x2 - g.x1, g.y2 - g.y1) >= 2;

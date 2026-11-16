@@ -434,4 +434,3 @@ footer#status.error { color: var(--danger); }
 @media (max-width: 1100px) {
   main { grid-template-columns: 200px 1fr 220px; }
 }
-PY
