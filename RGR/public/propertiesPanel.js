@@ -1,4 +1,4 @@
-const BOX_TYPES = new Set(["rectangle","square","rhombus","diamond","cube","cylinder","triangle","roundedrect","roundedrectangle","star","callout","speechbubble","flowdecision","flowprocess","flowterminator","cuboid","pyramid","cone","sphere","parallelogram","text","label","polygon","polyline","bezier","arrowbox"]);
+const BOX_TYPES = new Set(["rectangle","square","rhombus","cube","cylinder","triangle","roundedrect","star","pyramid","cone","sphere","parallelogram","text","polygon","polyline","bezier"]);
 
 const GEOMETRY_FIELDS = {
   circle: [["cx", "X центру"], ["cy", "Y центру"], ["r", "Радіус"]],

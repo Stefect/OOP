@@ -2,7 +2,7 @@ const CANVAS = { width: 2000, height: 2000 };
 const GRID = 20;
 const HANDLE = 8;
 const HIT = 6;
-const BOX_TYPES = new Set(["rectangle","square","rhombus","diamond","cube","cylinder","triangle","roundedrect","roundedrectangle","star","callout","speechbubble","flowdecision","flowprocess","flowterminator","cuboid","pyramid","cone","sphere","parallelogram","text","label","polygon","polyline","bezier","arrowbox"]);
+const BOX_TYPES = new Set(["rectangle","square","rhombus","cube","cylinder","triangle","roundedrect","star","pyramid","cone","sphere","parallelogram","text","polygon","polyline","bezier"]);
 
 export class Renderer {
   constructor(state, canvas, ctx) {

@@ -1,14 +1,14 @@
 const TYPE_LABELS = {
-  rectangle: "Прямокутник", square: "Квадрат", circle: "Коло", ellipse: "Еліпс", rhombus: "Ромб", diamond: "Ромб", cube: "Куб", cylinder: "Циліндр",
-  triangle: "Трикутник", roundedrect: "Скруглений прямокутник", star: "Зірка", callout: "Виноска", speechbubble: "Хмаринка",
-  flowdecision: "Рішення", flowprocess: "Процес", flowterminator: "Термінатор", cuboid: "Паралелепіпед", pyramid: "Піраміда", cone: "Конус", sphere: "Сфера",
+  rectangle: "Прямокутник", square: "Квадрат", circle: "Коло", ellipse: "Еліпс", rhombus: "Ромб", cube: "Куб", cylinder: "Циліндр",
+  triangle: "Трикутник", roundedrect: "Скруглений прямокутник", star: "Зірка",
+  pyramid: "Піраміда", cone: "Конус", sphere: "Сфера",
   parallelogram: "Паралелограм", text: "Текст", polygon: "Багатокутник", polyline: "Ломана", bezier: "Крива Безьє", arc: "Дуга/Сектор", line: "Лінія", arrow: "Стрілка",
   group: "Група"
 };
 const TYPE_GLYPHS = {
-  select: "↖", rectangle: "▭", square: "□", circle: "○", ellipse: "◯", rhombus: "◇", diamond: "◇", cube: "▣", cylinder: "⏢",
-  triangle: "△", roundedrect: "▢", star: "★", callout: "!", speechbubble: "!", flowdecision: "?", flowprocess: "P",
-  flowterminator: "O", cuboid: "▣", pyramid: "△", cone: "△", sphere: "●", parallelogram: "▱", text: "T",
+  select: "↖", rectangle: "▭", square: "□", circle: "○", ellipse: "◯", rhombus: "◇", cube: "▣", cylinder: "⏢",
+  triangle: "△", roundedrect: "▢", star: "★",
+  pyramid: "△", cone: "△", sphere: "●", parallelogram: "▱", text: "T",
   polygon: "⬠", polyline: "⤼", bezier: "∿", arc: "◡", line: "╱", arrow: "➔", group: "⊞",
 };
 
