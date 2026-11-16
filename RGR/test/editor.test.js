@@ -8,10 +8,10 @@ import { Editor } from "../src/Editor.js";
 
 test("Editor executes add and list", async () => {
   const editor = new Editor();
-  const added = await editor.execute("add rect 1 2 3 4");
+  const added = await editor.execute("add square 1 2 3 4");
   assert.match(added, /Додано/);
   const listed = await editor.execute("list");
-  assert.match(listed, /rectangle/);
+  assert.match(listed, /square/);
 });
 
 test("Editor handles unknown command", async () => {
@@ -23,20 +23,20 @@ test("Editor save/load round-trip", async () => {
   const dir = await mkdtemp(join(tmpdir(), "rgr-"));
   const path = join(dir, "doc.json");
   const editor = new Editor();
-  await editor.execute("add circle 10 10 5");
+  await editor.execute("add ellipse 10 10 5 5");
   await editor.execute(`save ${path}`);
   const editor2 = new Editor();
   const msg = await editor2.execute(`load ${path}`);
   assert.match(msg, /Відкрито/);
   const json = editor2.documentToJSON();
   assert.equal(json.shapes.length, 1);
-  assert.equal(json.shapes[0].type, "circle");
+  assert.equal(json.shapes[0].type, "ellipse");
   await rm(dir, { recursive: true, force: true });
 });
 
 test("Editor duplicate command", async () => {
   const editor = new Editor();
-  await editor.execute("add rect 1 2 3 4");
+  await editor.execute("add square 1 2 3 4");
   const msg = await editor.execute("duplicate 1");
   assert.match(msg, /Дубльовано/);
   const listed = await editor.execute("list");
@@ -45,8 +45,8 @@ test("Editor duplicate command", async () => {
 
 test("Editor group and ungroup commands", async () => {
   const editor = new Editor();
-  await editor.execute("add rect 1 2 3 4");
-  await editor.execute("add rect 5 6 3 4");
+  await editor.execute("add square 1 2 3 4");
+  await editor.execute("add square 5 6 3 4");
   const msg = await editor.execute("group 1 2");
   assert.match(msg, /Згруповано/);
   const unmsg = await editor.execute("ungroup 1");

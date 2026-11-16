@@ -4,19 +4,19 @@ import assert from "node:assert/strict";
 import { shapeFactory } from "../src/shapes/factory.js";
 import { Shape } from "../src/shapes/Shape.js";
 
-test("ShapeFactory creates rectangle with geometry", () => {
-  const shape = shapeFactory.create("rect", 1, [1, 2, 3, 4]);
+test("ShapeFactory creates square with geometry", () => {
+  const shape = shapeFactory.create("square", 1, [1, 2, 3, 4]);
   assert.equal(shape.id, 1);
-  assert.equal(shape.type, "rectangle");
+  assert.equal(shape.type, "square");
   assert.deepEqual(shape.geometry, { x: 1, y: 2, width: 3, height: 4 });
 });
 
 test("ShapeFactory restore round-trips", () => {
-  const original = shapeFactory.create("circle", 7, [10, 20, 5]);
+  const original = shapeFactory.create("ellipse", 7, [10, 20, 5, 5]);
   const restored = shapeFactory.restore(original.toJSON());
   assert.equal(restored.id, 7);
-  assert.equal(restored.type, "circle");
-  assert.deepEqual(restored.geometry, { cx: 10, cy: 20, r: 5 });
+  assert.equal(restored.type, "ellipse");
+  assert.deepEqual(restored.geometry, { cx: 10, cy: 20, rx: 5, ry: 5 });
 });
 
 test("ShapeFactory rejects unknown type", () => {
@@ -24,24 +24,24 @@ test("ShapeFactory rejects unknown type", () => {
 });
 
 test("ShapeFactory validates non-negative fields", () => {
-  assert.throws(() => shapeFactory.create("rect", 1, [1, 2, -3, 4]), /не може бути від'ємним/);
+  assert.throws(() => shapeFactory.create("square", 1, [1, 2, -3, 4]), /не може бути від'ємним/);
 });
 
 test("Shape encapsulates geometry (no external mutation)", () => {
-  const shape = shapeFactory.create("rect", 1, [1, 2, 3, 4]);
+  const shape = shapeFactory.create("square", 1, [1, 2, 3, 4]);
   const geometry = shape.geometry;
   geometry.x = 999;
   assert.equal(shape.geometry.x, 1);
 });
 
 test("Shape move updates geometry", () => {
-  const shape = shapeFactory.create("rect", 1, [1, 2, 3, 4]);
+  const shape = shapeFactory.create("square", 1, [1, 2, 3, 4]);
   shape.move(5, -1);
   assert.deepEqual(shape.geometry, { x: 6, y: 1, width: 3, height: 4 });
 });
 
 test("Shape toJSON returns copies", () => {
-  const shape = shapeFactory.create("rect", 1, [1, 2, 3, 4]);
+  const shape = shapeFactory.create("square", 1, [1, 2, 3, 4]);
   const json = shape.toJSON();
   json.geometry.x = 999;
   assert.equal(shape.geometry.x, 1);

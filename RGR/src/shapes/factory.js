@@ -1,5 +1,3 @@
-import { Rectangle } from "./Rectangle.js";
-import { Circle } from "./Circle.js";
 import { Ellipse } from "./Ellipse.js";
 import { Line } from "./Line.js";
 import { BoxShape } from "./BoxShape.js";
@@ -33,9 +31,6 @@ export class ShapeFactory {
     this._fields = new Map();
     this._creators = new Map();
 
-    this._fields.set(Rectangle.type, Rectangle.fields);
-    this._fields.set("rect", Rectangle.fields);
-    this._fields.set(Circle.type, Circle.fields);
     this._fields.set(Ellipse.type, Ellipse.fields);
     this._fields.set(Line.type, Line.fields);
     this._fields.set("arrow", LINE_FIELDS);
@@ -46,10 +41,9 @@ export class ShapeFactory {
     this._fields.set("arc", ARC_FIELDS);
     this._fields.set("sector", ARC_FIELDS);
 
-    this._creators.set(Rectangle.type, (id, geometry, style) => new Rectangle(id, geometry, style));
-    this._creators.set("rect", (id, geometry, style) => new Rectangle(id, geometry, style));
+
     this._creators.set("square", (id, geometry, style) => new BoxShape(id, geometry, style, "square"));
-    this._creators.set(Circle.type, (id, geometry, style) => new Circle(id, geometry, style));
+
     this._creators.set(Ellipse.type, (id, geometry, style) => new Ellipse(id, geometry, style));
     this._creators.set(Line.type, (id, geometry, style) => new Line(id, geometry, style));
     this._creators.set("arrow", (id, geometry, style) => new Line(id, geometry, style));
